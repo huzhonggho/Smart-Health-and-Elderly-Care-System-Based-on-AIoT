@@ -1,0 +1,12 @@
+数据库相关配置文件路径：
+    health-care-core/src/main/resources
+    - 数据库连接配置文件：application-druid.properties
+    - 数据库连接账户密码配置文件：important.properties
+    注意：目前使用的是电子烟数据库，测试时可以参考，需要更改为智慧康养数据库。
+
+测试接口类：src/main/java/com/boot/dandelion/health/care/core/controller/TestController.java
+
+项目架构：
+    health-care-common: 一些公共类
+    health-care-core: 代码接口开发
+    health-care-dao: 数据库mybatis开发
