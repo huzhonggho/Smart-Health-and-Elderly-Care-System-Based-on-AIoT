@@ -17,14 +17,13 @@
 
     <properties>
         <javax.servlet.version>3.1.0</javax.servlet.version>
-        <lombok.version>1.18.10</lombok.version>
+        <lombok.version>1.18.16</lombok.version>
         <commons.lang3.version>3.8.1</commons.lang3.version>
         <commons.collections4.version>4.1</commons.collections4.version>
         <fastjson.version>1.2.60</fastjson.version>
         <hutool.version>5.3.4</hutool.version>
         <spring.web.version>4.1.1.RELEASE</spring.web.version>
         <poi.ooxml.version>3.17</poi.ooxml.version>
-        <lombok.version>1.18.10</lombok.version>
 
 
 <!--        与hutool中的slf4j版本冲突,暂且注释-->
@@ -46,6 +45,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -82,13 +82,6 @@
 <!--            <version>${slf4j.api.version}</version>-->
 <!--            <scope>compile</scope>-->
 <!--        </dependency>-->
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <scope>provided</scope>
-        </dependency>
 
 
     </dependencies>
