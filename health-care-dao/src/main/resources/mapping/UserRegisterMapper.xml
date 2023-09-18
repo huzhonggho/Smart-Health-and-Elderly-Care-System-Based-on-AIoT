@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserRegisterMapper">
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserRegister">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="authentication_state" jdbcType="INTEGER" property="authenticationState"/>
+        <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+        <result column="open_id" jdbcType="VARCHAR" property="openId"/>
+        <result column="wechart_name" jdbcType="VARCHAR" property="wechartName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="login_state" jdbcType="INTEGER" property="loginState"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="DATE" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="user_iden" jdbcType="VARCHAR" property="userIden"/>
+        <result column="emergency_by" jdbcType="VARCHAR" property="emergencyBy"/>
+        <result column="emergency_number" jdbcType="VARCHAR" property="emergencyNumber"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+    id,phone_number,name,authentication_state,nick_name,open_id,wechart_name,password,login_state,state,create_time,
+    create_by,update_time,update_by,user_iden,emergency_by,emergency_number
+    </sql>
+
+
+    <update id="updateUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserRegister">
+       update user_register
+        <set>
+            <if test="id != null">
+                id=#{id},
+            </if>
+            <if test="phoneNumber != null">
+                phone_number=#{phoneNumber},
+            </if>
+            <if test="name != null">
+                name=#{name},
+            </if>
+            <if test="authenticationState != null">
+                authentication_state=#{authenticationState},
+            </if>
+            <if test="nickName != null">
+                nick_name=#{nickName},
+            </if>
+            <if test="openId != null">
+                open_id=#{openId},
+            </if>
+            <if test="wechartName != null">
+                wechart_name=#{wechartName},
+            </if>
+            <if test="password != null">
+                password=#{password},
+            </if>
+            <if test="loginState != null">
+                login_state=#{loginState},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+            <if test="createBy != null">
+                create_by=#{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time=#{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by=#{updateBy},
+            </if>
+            <if test="userIden != null">
+                user_iden=#{userIden},
+            </if>
+            <if test="emergencyBy != null">
+                emergency_by=#{emergencyBy},
+            </if>
+            <if test="emergencyNumber != null">
+                emergency_number=#{emergencyNumber}
+            </if>
+        </set>
+         where phone_number = #{phoneNumber}
+    </update>
+
+    <select id="selectAll" resultType="com.boot.dandelion.health.care.dao.entity.UserRegister">
+    select
+    <include refid="BaseColumnList"/>
+    from user_register
+    </select>
+
+    <select id="getUserByLoginTel" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="BaseColumnList"/>
+        from user_register
+        where phone_number = #{phoneNumber,jdbcType=VARCHAR}
+    </select>
+
+    <select id="queryUserList" resultType="com.boot.dandelion.health.care.dao.entity.UserRegister"
+            resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from user_register
+        <where>
+            <if test="name != null and name != ''">
+                and name like '%${name}%'
+            </if>
+            <if test="phoneNumber != null and phoneNumber != ''">
+                and phone_number = #{phoneNumber}
+            </if>
+        </where>
+        limit #{start},#{limit}
+    </select>
+    <select id="queryUserCount" parameterType="com.boot.dandelion.health.care.common.condition.UserRegisterCondition"
+            resultType="int">
+            SELECT count (1) from (
+            select
+            <include refid="BaseColumnList"/>
+            from user_register
+            <where>
+                <if test="name != null and name != ''">
+                   and name like '%${name}%'
+                </if>
+                <if test="phoneNumber != null and phoneNumber != ''">
+                    and phone_number = #{phoneNumber}
+                </if>
+            </where>
+            limit #{start}, #{limit}
+            )
+    </select>
+    <select id="selectUsersByName" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="BaseColumnList"/>
+    from user_register
+    where name like concat('%',#{name},'%')
+    </select>
+
+    <insert id="addUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserRegister" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into user_register (id,phone_number,name,authentication_state,nick_name,open_id,wechart_name,
+    password,login_state,state,create_time,create_by,update_time,update_by,user_iden,
+    emergency_by,emergency_number)
+    values (#{id,jdbcType=INTEGER}, #{phoneNumber,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{authenticationState,jdbcType=INTEGER},
+      #{nickName,jdbcType=VARCHAR},#{openId,jdbcType=VARCHAR},
+      #{wechartName,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},
+      #{loginState,jdbcType=INTEGER},#{state,jdbcType=VARCHAR},
+      #{createTime,jdbcType=VARCHAR},#{createBy,jdbcType=VARCHAR},
+      #{updateTime,jdbcType=DATE},#{updateBy,jdbcType=VARCHAR},
+      #{userIden,jdbcType=VARCHAR},#{emergencyBy,jdbcType=VARCHAR},#{emergencyNumber,jdbcType=VARCHAR}
+      )
+  </insert>
+
+    <delete id="deleteUserByPhone" parameterType="java.lang.String">
+    delete from user_register
+    where phone_number = #{phoneNumber,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteUserList" parameterType="java.lang.String">
+        delete
+        from user_register
+        where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

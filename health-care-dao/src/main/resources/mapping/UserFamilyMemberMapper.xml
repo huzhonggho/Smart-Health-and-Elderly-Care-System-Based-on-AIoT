@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserFamilyMemberMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserFamilyMember">
+        <result column="raf_id" jdbcType="VARCHAR" property="rafId"/>
+        <result column="raf_account" jdbcType="VARCHAR" property="rafAccount"/>
+        <result column="raf_name" jdbcType="VARCHAR" property="rafName"/>
+        <result column="raf_password" jdbcType="VARCHAR" property="rafPassword"/>
+        <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
+        <result column="u_name" jdbcType="VARCHAR" property="uname"/>
+        <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="DATE" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="family_id" jdbcType="VARCHAR" property="familyId"/>
+        <result column="user_iden" jdbcType="VARCHAR" property="userIden"/>
+        <result column="emergency_by" jdbcType="VARCHAR" property="emergencyBy"/>
+        <result column="emergency_number" jdbcType="VARCHAR" property="emergencyNumber"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        raf_id,raf_account,raf_name,raf_password,uuid,u_name,sort_order,state,create_time,create_by,
+        update_time,update_by,user_id,family_id,user_iden,emergency_by,emergency_number
+    </sql>
+
+    <update id="updateUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserFamilyMember">
+       update user_family_member
+        <set>
+            <if test="rafId != null">
+                raf_id = #{rafId},
+            </if>
+            <if test="rafAccount != null">
+                raf_account=#{rafAccount},
+            </if>
+            <if test="rafName != null">
+                raf_name=#{rafName},
+            </if>
+            <if test="rafPassword != null">
+                raf_password=#{rafPassword},
+            </if>
+            <if test="uuid != null">
+                uuid=#{uuid},
+            </if>
+            <if test="uname != null">
+                u_name=#{uname},
+            </if>
+            <if test="sortOrder != null">
+                sort_order=#{sortOrder},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+            <if test="createBy != null">
+                create_by=#{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time=#{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by=#{updateBy},
+            </if>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="familyId != null">
+                family_id=#{familyId},
+            </if>
+            <if test="userIden != null">
+                user_iden=#{userIden},
+            </if>
+            <if test="emergencyBy != null">
+                emergency_by=#{emergencyBy},
+            </if>
+            <if test="emergencyNumber != null">
+                emergency_number=#{emergencyNumber}
+            </if>
+        </set>
+        where raf_name = #{rafName}
+    </update>
+
+    <delete id="delUserBytel" parameterType="java.lang.String">
+        delete from user_family_member
+        where raf_account = #{rafAccount,jdbcType=VARCHAR}
+
+    </delete>
+
+    <select id="selectAll" resultType="com.boot.dandelion.health.care.dao.entity.UserFamilyMember">
+        select
+        <include refid="BaseColumnList"/>
+        from user_family_member
+    </select>
+
+    <select id="getUserByLoginTel" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="BaseColumnList"/>
+        from user_family_member
+        where raf_account = #{rafAccount,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="addUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserFamilyMember" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into user_family_member (raf_id,raf_account,raf_name,raf_password,uuid,u_name,sort_order,state,create_time,create_by,
+        update_time,update_by,user_id,family_id,user_iden,emergency_by,emergency_number)
+        values (
+            #{rafId,jdbcType=VARCHAR},
+            #{rafAccount,jdbcType=VARCHAR},
+            #{rafName,jdbcType=VARCHAR},
+            #{rafPassword,jdbcType=VARCHAR},
+            #{uuid,jdbcType=VARCHAR},
+            #{uname,jdbcType=VARCHAR},
+            #{sortOrder,jdbcType=INTEGER},
+            #{state,jdbcType=VARCHAR},
+            #{createTime,jdbcType=DATE},
+            #{createBy,jdbcType=VARCHAR},
+            #{updateTime,jdbcType=DATE},
+            #{updateBy,jdbcType=VARCHAR},
+            #{userId,jdbcType=VARCHAR},
+            #{familyId,jdbcType=VARCHAR},
+            #{userIden,jdbcType=VARCHAR},
+            #{emergencyBy,jdbcType=VARCHAR},
+            #{emergencyNumber,jdbcType=VARCHAR}
+      )
+    </insert>
+
+</mapper>
