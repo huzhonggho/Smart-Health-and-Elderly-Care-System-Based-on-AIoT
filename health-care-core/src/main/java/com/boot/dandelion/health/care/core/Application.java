@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -25,6 +26,9 @@ import java.net.UnknownHostException;
 @PropertySources(value = {@PropertySource(value = {"classpath:important.properties", "classpath:application.properties"},
         encoding = "utf-8")})
 @EnableScheduling
+//开启swagger
+//@SpringBootApplication(scanBasePackages = "com.boot.dandelion.health.care.core.controller")
+//@ComponentScan(basePackages = "com.boot.dandelion.health.care.core.service")
 @SpringBootApplication
 //开启swagger
 @EnableSwagger2

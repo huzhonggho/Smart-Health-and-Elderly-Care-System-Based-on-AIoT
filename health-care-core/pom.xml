@@ -35,7 +35,6 @@
             <version>${io.springfox.version}</version>
         </dependency>
 
-
         <dependency>
             <groupId>com.boot.dandelion</groupId>
             <artifactId>health-care-common</artifactId>

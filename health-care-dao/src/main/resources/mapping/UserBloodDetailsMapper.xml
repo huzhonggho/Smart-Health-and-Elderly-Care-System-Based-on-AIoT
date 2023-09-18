@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserBloodDetailsMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserBloodDetails">
+        <id column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+        <id column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="thermometer_id" jdbcType="VARCHAR" property="thermometerId"/>
+        <result column="time" jdbcType="VARCHAR" property="time"/>
+        <result column="diastolic_pressure" jdbcType="INTEGER" property="diastolicPressure"/>
+        <result column="systolic_blood_pressure" jdbcType="INTEGER" property="systolicBloodPressure"/>
+        <result column="heart_rate" jdbcType="INTEGER" property="heartRate"/>
+        <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="data_source" jdbcType="VARCHAR" property="dataSource"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        tenant_id, user_id, thermometer_id, time, diastolic_pressure, systolic_blood_pressure, heart_rate,
+        sort_order, state, remarks, create_time, create_by, update_time, update_by, data_source
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails">
+        insert into user_blood_details (tenant_id, user_id, thermometer_id, time, diastolic_pressure,
+                                      systolic_blood_pressure, heart_rate, sort_order, state, remarks,
+                                      create_time, create_by, update_time, update_by, data_source)
+        values (#{tenantId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{thermometerId,jdbcType=VARCHAR},
+                #{time,jdbcType=VARCHAR}, #{diastolicPressure,jdbcType=INTEGER}, #{systolicBloodPressure,jdbcType=INTEGER},
+                #{heartRate,jdbcType=INTEGER}, #{sortOrder,jdbcType=INTEGER}, #{state,jdbcType=VARCHAR},
+                #{remarks,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR},
+                #{updateTime,jdbcType=VARCHAR}, #{updateBy,jdbcType=VARCHAR}, #{dataSource,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails">
+        DELETE FROM user_blood_details
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails">
+        update user_blood_details
+        set time                    = #{time,jdbcType=VARCHAR},
+            diastolic_pressure      = #{diastolicPressure,jdbcType=INTEGER},
+            systolic_blood_pressure = #{systolicBloodPressure,jdbcType=INTEGER},
+            heart_rate              = #{heartRate,jdbcType=INTEGER},
+            sort_order              = #{sortOrder,jdbcType=INTEGER},
+            state                   = #{state,jdbcType=VARCHAR},
+            remarks                 = #{remarks,jdbcType=VARCHAR},
+            update_time             = #{updateTime,jdbcType=VARCHAR},
+            update_by               = #{updateBy,jdbcType=VARCHAR},
+            data_source             = #{dataSource,jdbcType=VARCHAR}
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER}
+          AND user_id = #{userId,jdbcType=VARCHAR}
+    </update>
+
+
+    <select id="selectByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM user_blood_details
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <select id="show" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM user_blood_details
+    </select>
+</mapper>

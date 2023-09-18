@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserTemDetailsMapper">
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
+        <id column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+        <id column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="thermometer_id" jdbcType="VARCHAR" property="thermometerId"/>
+        <result column="time" jdbcType="VARCHAR" property="time"/>
+        <result column="pulse" jdbcType="INTEGER" property="pulse"/>
+        <result column="temperature" jdbcType="DECIMAL" property="temperature"/>
+        <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="data_source" jdbcType="VARCHAR" property="dataSource"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        tenant_id
+        , user_id, thermometer_id, time, pulse, temperature, sort_order, state, remarks, create_time, create_by, update_time, update_by, data_source
+    </sql>
+
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
+        insert into UserTemDetails (tenant_id, user_id, thermometer_id, time, pulse, temperature, sort_order, state,
+                                    remarks, create_time, create_by, update_time, update_by, data_source)
+        values (#{tenantId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{thermometerId,jdbcType=VARCHAR},
+                #{time,jdbcType=VARCHAR}, #{pulse,jdbcType=INTEGER}, #{temperature,jdbcType=DECIMAL},
+                #{sortOrder,jdbcType=INTEGER}, #{state,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR},
+                #{createTime,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR},
+                #{updateBy,jdbcType=VARCHAR}, #{dataSource,jdbcType=VARCHAR})
+    </insert>
+
+
+    <!-- 添加其他自定义查询语句和映射 -->
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+        delete from UserTemDetails
+        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+    </delete>
+
+    <update id="updateByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
+        update UserTemDetails
+        set time        = #{time,jdbcType=VARCHAR},
+            pulse       = #{pulse,jdbcType=INTEGER},
+            temperature = #{temperature,jdbcType=DECIMAL},
+            sort_order  = #{sortOrder,jdbcType=INTEGER},
+            state       = #{state,jdbcType=VARCHAR},
+            remarks     = #{remarks,jdbcType=VARCHAR},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+            update_by   = #{updateBy,jdbcType=VARCHAR},
+            data_source = #{dataSource,jdbcType=VARCHAR}
+        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select tenant_id, user_id, thermometer_id, time, pulse, temperature, sort_order, state, remarks, create_time, create_by, update_time, update_by, data_source
+        from UserTemDetails
+        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+    </select>
+</mapper>
