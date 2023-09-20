@@ -2,14 +2,12 @@ package com.boot.dandelion.health.care.core.service.impl;
 
 import com.boot.dandelion.health.care.core.service.UserTemDetailsService;
 import com.boot.dandelion.health.care.dao.entity.UserTemDetails;
-import com.boot.dandelion.health.care.dao.mapper.UserMapper;
 import com.boot.dandelion.health.care.dao.mapper.UserTemDetailsMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Resource;
-import java.util.Map;
+import java.util.List;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -24,8 +22,8 @@ public class UserTemDetailsServiceImpl implements UserTemDetailsService {
     }
 
     @Override
-    public void deleteByPrimaryKey( String params) {
-         userTemDetailsMapper.deleteByPrimaryKey(params);
+    public void deleteByPrimaryKey(UserTemDetails userTemDetails) {
+        userTemDetailsMapper.deleteByPrimaryKey(userTemDetails);
     }
 
     @Override
@@ -34,7 +32,12 @@ public class UserTemDetailsServiceImpl implements UserTemDetailsService {
     }
 
     @Override
-    public UserTemDetails selectByPrimaryKey(String params) {
-        return userTemDetailsMapper.selectByPrimaryKey(params);
+    public UserTemDetails selectByPrimaryKey(UserTemDetails userTemDetails) {
+        return userTemDetailsMapper.selectByPrimaryKey(userTemDetails);
+    }
+
+    @Override
+    public List<UserTemDetails> selectAll() {
+        return userTemDetailsMapper.selectAll();
     }
 }

@@ -25,7 +25,7 @@
 
 
     <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
-        insert into UserTemDetails (tenant_id, user_id, thermometer_id, time, pulse, temperature, sort_order, state,
+        insert into user_tem_details (tenant_id, user_id, thermometer_id, time, pulse, temperature, sort_order, state,
                                     remarks, create_time, create_by, update_time, update_by, data_source)
         values (#{tenantId,jdbcType=INTEGER}, #{userId,jdbcType=VARCHAR}, #{thermometerId,jdbcType=VARCHAR},
                 #{time,jdbcType=VARCHAR}, #{pulse,jdbcType=INTEGER}, #{temperature,jdbcType=DECIMAL},
@@ -36,13 +36,13 @@
 
 
     <!-- 添加其他自定义查询语句和映射 -->
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-        delete from UserTemDetails
-        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+    <delete id="deleteByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
+        delete from user_tem_details
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
     </delete>
 
     <update id="updateByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails">
-        update UserTemDetails
+        update user_tem_details
         set time        = #{time,jdbcType=VARCHAR},
             pulse       = #{pulse,jdbcType=INTEGER},
             temperature = #{temperature,jdbcType=DECIMAL},
@@ -52,12 +52,20 @@
             update_time = #{updateTime,jdbcType=TIMESTAMP},
             update_by   = #{updateBy,jdbcType=VARCHAR},
             data_source = #{dataSource,jdbcType=VARCHAR}
-        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
     </update>
 
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select tenant_id, user_id, thermometer_id, time, pulse, temperature, sort_order, state, remarks, create_time, create_by, update_time, update_by, data_source
-        from UserTemDetails
-        where thermometer_id = #{thermometerId,jdbcType=VARCHAR}
+    <select id="selectByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.UserTemDetails" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from user_tem_details
+        WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM user_tem_details
+    </select>
+
 </mapper>
