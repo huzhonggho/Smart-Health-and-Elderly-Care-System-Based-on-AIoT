@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.List;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin
 @Slf4j
 
 @PropertySources(value = {@PropertySource(value = {"classpath:important.properties", "classpath:application.properties"},
@@ -29,7 +29,7 @@ public class UserBloodDetailsController {
     private UserBloodDetailsService userBloodDetailsService;
 
     @PostMapping("/add")
-    public ResponseWrapper<Object> add(@RequestBody UserBloodDetails userBloodDetails){
+    public ResponseWrapper<Object> add(@RequestBody UserBloodDetails userBloodDetails) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
 
@@ -48,7 +48,7 @@ public class UserBloodDetailsController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseWrapper<Object> deleteByKey(@RequestBody  UserBloodDetails userBloodDetails) {
+    public ResponseWrapper<Object> deleteByKey(@RequestBody UserBloodDetails userBloodDetails) {
 
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
@@ -82,36 +82,53 @@ public class UserBloodDetailsController {
         return responseWrapper;
     }
 
-//    @GetMapping("/show")
-//    public ResponseWrapper<Object> showByKey(@RequestBody  UserBloodDetails userBloodDetails) {
-//
-//        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-//        try {
-//
-//            responseWrapper.setData(userBloodDetailsService.selectByPrimaryKey(userBloodDetails));
-//            responseWrapper.setMsg("血压查找成功");
-//            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-//
-//        } catch (Exception e) {
-//            log.error("血压查找失败：", ExceptionUtils.getStackTrace(e));
-//            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
-//            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
-//        }
-//        return responseWrapper;
-//    }
-@GetMapping("/showAll")
-public ResponseWrapper<List<UserBloodDetails>> getAll() {
-    ResponseWrapper<List<UserBloodDetails>> responseWrapper = new ResponseWrapper<>();
-    try {
-        List<UserBloodDetails> allData = userBloodDetailsService.show();
-        responseWrapper.setData(allData);
-        responseWrapper.setMsg("所有信息查询成功");
-        responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-    } catch (Exception e) {
-        log.error("所有信息查询失败：", ExceptionUtils.getStackTrace(e));
-        responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
-        responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+    @GetMapping("/show")
+    public ResponseWrapper<Object> showByKey(@RequestBody UserBloodDetails userBloodDetails) {
+
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+
+            responseWrapper.setData(userBloodDetailsService.selectByPrimaryKey(userBloodDetails));
+            responseWrapper.setMsg("血压查找成功");
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+
+        } catch (Exception e) {
+            log.error("血压查找失败：", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+        }
+        return responseWrapper;
     }
-    return responseWrapper;
-}
+
+    @GetMapping("/showAll")
+    public ResponseWrapper<List<UserBloodDetails>> getAll() {
+        ResponseWrapper<List<UserBloodDetails>> responseWrapper = new ResponseWrapper<>();
+        try {
+            List<UserBloodDetails> allData = userBloodDetailsService.show();
+            responseWrapper.setData(allData);
+            responseWrapper.setMsg("所有信息查询成功");
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+        } catch (Exception e) {
+            log.error("所有信息查询失败：", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+        }
+        return responseWrapper;
+    }
+
+    @GetMapping("/showBetween{start}/{end}")
+    public ResponseWrapper<List<UserBloodDetails>> getBetween(@PathVariable("start") String start,@PathVariable("end") String end) {
+        ResponseWrapper<List<UserBloodDetails>> responseWrapper = new ResponseWrapper<>();
+        try {
+            List<UserBloodDetails> allData = userBloodDetailsService.showBetween(start,end);
+            responseWrapper.setData(allData);
+            responseWrapper.setMsg("所有信息查询成功");
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+        } catch (Exception e) {
+            log.error("所有信息查询失败：", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+        }
+        return responseWrapper;
+    }
 }

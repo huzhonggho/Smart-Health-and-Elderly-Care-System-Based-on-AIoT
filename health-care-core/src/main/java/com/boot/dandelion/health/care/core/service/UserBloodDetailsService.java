@@ -17,4 +17,6 @@ public interface UserBloodDetailsService {
     UserBloodDetails selectByPrimaryKey(UserBloodDetails userBloodDetails);
 
     List<UserBloodDetails> show();
+
+    List<UserBloodDetails> showBetween(String start,String end);
 }

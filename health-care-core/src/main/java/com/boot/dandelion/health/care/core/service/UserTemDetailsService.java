@@ -17,4 +17,5 @@ public interface UserTemDetailsService {
     UserTemDetails selectByPrimaryKey(UserTemDetails userTemDetails);
 
     List<UserTemDetails> selectAll();
+
 }
