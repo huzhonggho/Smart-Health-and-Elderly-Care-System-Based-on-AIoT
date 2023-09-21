@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserFamilyMapper">
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserFamily">
+        <result column="family_id" jdbcType="VARCHAR" property="familyId"/>
+        <result column="family_name" jdbcType="VARCHAR" property="familyName"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        family_id,family_name,user_id,create_time,create_by
+    </sql>
+
+    <insert id="addUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserFamily" useGeneratedKeys="true"
+            keyProperty="family_id">
+        insert into user_family ( family_id,family_name,user_id,create_time,create_by)
+        values (
+            #{familyId,jdbcType=VARCHAR},
+            #{familyName,jdbcType=VARCHAR},
+            #{userId,jdbcType=VARCHAR},
+            #{createTime,jdbcType=DATE},
+            #{createBy,jdbcType=VARCHAR}
+      )
+    </insert>
+
+    <update id="updateUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserFamily">
+        update user_family
+        <set>
+            <if test="familyId != null">
+                family_id = #{familyId},
+            </if>
+            <if test="familyName != null">
+                family_name=#{familyName},
+            </if>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+            <if test="createBy != null">
+                create_by=#{createBy},
+            </if>
+        </set>
+        where family_name = #{familyName}
+    </update>
+
+    <delete id="delUserByFamilyName" parameterType="java.lang.String">
+        delete from user_family
+        where family_name = #{familyName,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="selectAll" resultType="com.boot.dandelion.health.care.dao.entity.UserFamily">
+        select
+            <include refid="BaseColumnList"/>
+        from user_family
+    </select>
+
+    <select id="getUserByFamilyName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="BaseColumnList"/>
+        from user_family
+        where family_name = #{familyName,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

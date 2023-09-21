@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserSignsMapper">
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserSigns">
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="date_birth" jdbcType="DATE" property="dateBirth"/>
+        <result column="mailbox" jdbcType="VARCHAR" property="mailbox"/>
+        <result column="user_iden" jdbcType="VARCHAR" property="userIden"/>
+        <result column="height" jdbcType="DOUBLE" property="height"/>
+        <result column="weight" jdbcType="INTEGER" property="weight"/>
+        <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="ethnic_group" jdbcType="VARCHAR" property="ethnicGroup"/>
+        <result column="blood_type" jdbcType="VARCHAR" property="bloodType"/>
+        <result column="RH_blood" jdbcType="VARCHAR" property="rhBlood"/>
+        <result column="career" jdbcType="VARCHAR" property="career"/>
+        <result column="history_illness" jdbcType="VARCHAR" property="historyIllness"/>
+        <result column="history_surgery" jdbcType="VARCHAR" property="historySurgery"/>
+        <result column="disability" jdbcType="VARCHAR" property="disability"/>
+        <result column="history_drug" jdbcType="VARCHAR" property="historyDrug"/>
+        <result column="genetic_history" jdbcType="VARCHAR" property="geneticHistory"/>
+        <result column="exercises_number" jdbcType="INTEGER" property="exercisesNumber"/>
+        <result column="eating_habits" jdbcType="VARCHAR" property="eatingHabits"/>
+        <result column="smoking" jdbcType="VARCHAR" property="smoking"/>
+        <result column="drinking" jdbcType="VARCHAR" property="drinking"/>
+        <result column="diastolic_pressure" jdbcType="INTEGER" property="diastolicPressure"/>
+        <result column="systolic_blood_pressure" jdbcType="INTEGER" property="systolicBloodPressure"/>
+        <result column="heart_rate" jdbcType="INTEGER" property="heartRate"/>
+        <result column="blood_sugar" jdbcType="INTEGER" property="bloodSugar"/>
+        <result column="body_fat" jdbcType="VARCHAR" property="bodyFat"/>
+        <result column="blood_oxygen_saturation" jdbcType="VARCHAR" property="bloodOxygenSaturation"/>
+        <result column="temperature" jdbcType="DECIMAL" property="temperature"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        user_id,name,date_birth,mailbox,user_iden,height,weight,gender,ethnic_group,blood_type,RH_blood,career,
+        history_illness,history_surgery,disability,history_drug,genetic_history,exercises_number,eating_habits,smoking,
+        drinking,diastolic_pressure,systolic_blood_pressure,heart_rate,blood_sugar,body_fat,blood_oxygen_saturation,
+        temperature,create_time,create_by,remarks,tenant_id
+    </sql>
+
+    <insert id="addUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserSigns" useGeneratedKeys="true"
+            keyProperty="user_id">
+        insert into user_signs (user_id,name,date_birth,mailbox,user_iden,height,weight,gender,ethnic_group,blood_type,RH_blood,career,
+        history_illness,history_surgery,disability,history_drug,genetic_history,exercises_number,eating_habits,smoking,
+        drinking,diastolic_pressure,systolic_blood_pressure,heart_rate,blood_sugar,body_fat,blood_oxygen_saturation,
+        temperature,create_time,create_by,remarks,tenant_id)
+        values (
+             #{userId, jdbcType=VARCHAR},#{name, jdbcType=VARCHAR},
+             #{dateBirth,jdbcType=DATE},#{mailbox, jdbcType=VARCHAR},
+             #{userIden, jdbcType=VARCHAR},#{height,jdbcType=DOUBLE},
+             #{weight, jdbcType=INTEGER},#{gender, jdbcType=VARCHAR},
+             #{ethnicGroup, jdbcType=VARCHAR},#{bloodType, jdbcType=VARCHAR},
+             #{rhBlood, jdbcType=VARCHAR},#{career, jdbcType=VARCHAR},
+             #{historyIllness, jdbcType=VARCHAR},#{historySurgery, jdbcType=VARCHAR},
+             #{disability, jdbcType=VARCHAR},#{historyDrug, jdbcType=VARCHAR},
+             #{geneticHistory, jdbcType=VARCHAR},#{exercisesNumber, jdbcType=INTEGER},
+             #{eatingHabits, jdbcType=VARCHAR},#{smoking, jdbcType=VARCHAR},
+             #{drinking, jdbcType=VARCHAR},#{diastolicPressure, jdbcType=INTEGER},
+             #{systolicBloodPressure, jdbcType=INTEGER},#{heartRate, jdbcType=INTEGER},
+             #{bloodSugar, jdbcType=INTEGER},#{bodyFat, jdbcType=VARCHAR},
+             #{bloodOxygenSaturation, jdbcType=VARCHAR},#{temperature, jdbcType=DECIMAL},
+             #{createTime, jdbcType=DATE},#{createBy, jdbcType=VARCHAR},
+             #{remarks, jdbcType=VARCHAR},#{tenantId, jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="updateUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserSigns">
+       update user_signs
+       <set>
+           <if test="userId != null">
+               user_id=#{userId},
+           </if>
+           <if test="name != null">
+               name =#{name},
+           </if>
+           <if test="dateBirth != null">
+               date_birth =#{dateBirth},
+           </if>
+           <if test="mailbox != null">
+               mailbox =#{mailbox},
+           </if>
+           <if test="userIden != null">
+               user_iden =#{userIden},
+           </if>
+           <if test="height != null">
+               height =#{height},
+           </if>
+           <if test="weight != null">
+               weight =#{weight},
+           </if>
+           <if test="ethnicGroup != null">
+               ethnic_group =#{ethnicGroup},
+           </if>
+           <if test="rhBlood != null">
+               RH_blood =#{rhBlood},
+           </if>
+           <if test="career != null">
+               career =#{career},
+           </if>
+           <if test="historyIllness != null">
+               history_illness =#{historyIllness},
+           </if>
+           <if test="historySurgery != null">
+               history_surgery=#{historySurgery},
+           </if>
+           <if test="disability != null">
+               disability=#{disability},
+           </if>
+           <if test="historyDrug != null">
+               history_drug=#{historyDrug},
+           </if>
+           <if test="geneticHistory != null">
+               genetic_history=#{geneticHistory},
+           </if>
+           <if test="exercisesNumber != null">
+               exercises_number=#{exercisesNumber},
+           </if>
+           <if test="eatingHabits != null">
+               eating_habits=#{eatingHabits},
+           </if>
+           <if test="smoking != null">
+               smoking=#{smoking},
+           </if>
+           <if test="drinking != null">
+               drinking=#{drinking},
+           </if>
+           <if test="diastolicPressure != null">
+               diastolic_pressure=#{diastolicPressure},
+           </if>
+           <if test="systolicBloodPressure != null">
+               systolic_blood_pressure=#{systolicBloodPressure},
+           </if>
+           <if test="heartRate != null">
+               heart_rate=#{heartRate},
+           </if>
+           <if test="bloodSugar != null">
+               blood_sugar=#{bloodSugar},
+           </if>
+           <if test="bodyFat != null">
+               body_fat=#{bodyFat},
+           </if>
+           <if test="bloodOxygenSaturation != null">
+               blood_oxygen_saturation=#{bloodOxygenSaturation},
+           </if>
+           <if test="temperature != null">
+               temperature=#{temperature},
+           </if>
+           <if test="createTime != null">
+               create_time=#{createTime},
+           </if>
+           <if test="createBy != null">
+               creat_by=#{createBy},
+           </if>
+           <if test="remarks != null">
+               remarks=#{remarks},
+           </if>
+           <if test="tenantId != null">
+               tenant_id=#{tenantId}
+           </if>
+       </set>
+       where user_id = #{userId}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user_signs
+        where user_iden = #{userIden, jdbcType=VARCHAR}
+    </delete>
+
+    <select id="selectByUid" resultType="com.boot.dandelion.health.care.dao.entity.UserSigns">
+    select
+        <include refid="BaseColumnList"/>
+    from user_signs
+    where user_id = #{userId}
+    </select>
+
+    <select id="getUserByIden" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="BaseColumnList"/>
+        from user_signs
+        where user_iden = #{userIden}
+    </select>
+</mapper>

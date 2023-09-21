@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserMedicalReportMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserMedicalReport">
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+        <result column="rpotc_no" jdbcType="VARCHAR" property="rpotcNo"/>
+        <result column="appy_no" jdbcType="VARCHAR" property="appyNo"/>
+        <result column="exam_mtd" jdbcType="VARCHAR" property="examMtd"/>
+        <result column="ref_val" jdbcType="VARCHAR" property="refVal"/>
+        <result column="exam_unt" jdbcType="VARCHAR" property="examUnt"/>
+        <result column="exam_rslt_val" jdbcType="VARCHAR" property="examRsltVal"/>
+        <result column="exam_rslt_dicm" jdbcType="VARCHAR" property="examRsltDicm"/>
+        <result column="exam_item_detl_code" jdbcType="VARCHAR" property="examItemDetlCode"/>
+        <result column="exam_item_detl_name" jdbcType="VARCHAR" property="examItemDetlName"/>
+        <result column="exam_rslt_abn" jdbcType="VARCHAR" property="examRsltAbn"/>
+        <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="create_time" jdbcType="DATE" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="DATE" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        user_id,tenant_id,rpotc_no,appy_no,exam_mtd,ref_val,exam_unt,exam_rslt_val,exam_rslt_dicm,exam_item_detl_code,
+        exam_item_detl_name,exam_rslt_abn,sort_order,state,remarks,create_time,create_by,update_time,update_by
+    </sql>
+
+    <insert id="addUser" parameterType="com.boot.dandelion.health.care.dao.entity.UserMedicalReport"
+            useGeneratedKeys="true"
+            keyProperty="user_id">
+        insert into user_medical_report (user_id,tenant_id,rpotc_no,appy_no,exam_mtd,ref_val,exam_unt,exam_rslt_val,exam_rslt_dicm,exam_item_detl_code,
+        exam_item_detl_name,exam_rslt_abn,sort_order,state,remarks,create_time,create_by,update_time,update_by)
+        values (
+             #{userId, jdbcType=VARCHAR},#{tenantId, jdbcType=INTEGER},
+             #{rpotcNo,jdbcType=VARCHAR},#{appyNo, jdbcType=VARCHAR},
+             #{examMtd, jdbcType=VARCHAR},#{refVal,jdbcType=VARCHAR},
+             #{examUnt, jdbcType=VARCHAR},#{examRsltVal, jdbcType=VARCHAR},
+             #{examRsltDicm, jdbcType=VARCHAR},#{examItemDetlCode, jdbcType=VARCHAR},
+             #{examItemDetlName, jdbcType=VARCHAR},#{examRsltAbn, jdbcType=VARCHAR},
+             #{sortOrder, jdbcType=INTEGER},#{state, jdbcType=VARCHAR},
+             #{remarks, jdbcType=VARCHAR},#{createTime, jdbcType=DATE},
+             #{createBy, jdbcType=VARCHAR},#{updateTime, jdbcType=DATE},
+             #{updateBy, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <update id="updateUser">
+        update user_medical_report
+        <set>
+            <if test="userId != null">
+                user_id=#{userId},
+            </if>
+            <if test="tenantId != null">
+                tenant_id=#{tenantId},
+            </if>
+            <if test="rpotcNo != null">
+                rpotc_no=#{rpotcNo},
+            </if>
+            <if test="appyNo != null">
+                appy_no=#{appyNo},
+            </if>
+            <if test="examMtd != null">
+                exam_mtd=#{examMtd},
+            </if>
+            <if test="refVal != null">
+                ref_val=#{refVal},
+            </if>
+            <if test="examUnt != null">
+                exam_unt=#{examUnt},
+            </if>
+            <if test="examRsltVal != null">
+                exam_rslt_val=#{examRsltVal},
+            </if>
+            <if test="examRsltDicm != null">
+                exam_rslt_dicm=#{examRsltDicm},
+            </if>
+            <if test="examItemDetlCode != null">
+                exam_item_detl_code=#{examItemDetlCode},
+            </if>
+            <if test="examItemDetlName != null">
+                exam_item_detl_name=#{examItemDetlName},
+            </if>
+            <if test="examRsltAbn != null">
+                exam_rslt_abn=#{examRsltAbn},
+            </if>
+            <if test="sortOrder != null">
+                sort_order=#{sortOrder},
+            </if>
+            <if test="state != null">
+                state=#{state},
+            </if>
+            <if test="remarks != null">
+                remarks=#{remarks},
+            </if>
+            <if test="createTime != null">
+                create_time=#{createTime},
+            </if>
+            <if test="createBy != null">
+                create_by=#{createBy},
+            </if>
+            <if test="updateTime != null">
+                update_time=#{updateTime},
+            </if>
+            <if test="updateBy != null">
+                update_by=#{updateBy}
+            </if>
+        </set>
+        where rpotc_no=#{rpotcNo}
+    </update>
+
+    <delete id="deleteUser">
+        delete from user_medical_report
+        where rpotc_no = #{rpotcNo}
+    </delete>
+
+    <select id="selectAllByUid" resultType="com.boot.dandelion.health.care.dao.entity.UserMedicalReport">
+        select
+        <include refid="BaseColumnList"/>
+        from user_medical_report
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectAllByRn" resultType="com.boot.dandelion.health.care.dao.entity.UserMedicalReport">
+        select
+        <include refid="BaseColumnList"/>
+        from user_medical_report
+        where rpotc_no = #{rpotcNo}
+    </select>
+
+</mapper>

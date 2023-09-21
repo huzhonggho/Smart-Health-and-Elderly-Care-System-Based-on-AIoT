@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserSleepMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserSleep">
+        <result column="tenant_id" jdbcType="INTEGER" property="tenantId"/>
+        <result column="user_id" jdbcType="VARCHAR" property="userId"/>
+        <result column="thermometer_id" jdbcType="VARCHAR" property="thermometerId"/>
+        <result column="time" jdbcType="VARCHAR" property="time"/>
+        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
+        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
+        <result column="awake_time" jdbcType="VARCHAR" property="awakeTime"/>
+        <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
+        <result column="create_time" jdbcType="VARCHAR" property="createTime"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="update_time" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="data_sources" jdbcType="VARCHAR" property="dataSources"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        tenant_id,user_id,thermometer_id,time,start_time,end_time,awake_time,
+        sort_order,state,remarks,create_time,create_by,update_time,update_by,data_sources
+    </sql>
+
+    <select id="selectAll" resultType="com.boot.dandelion.health.care.dao.entity.UserSleep">
+        select
+        <include refid="BaseColumnList"/>
+        from user_sleep
+    </select>
+
+
+</mapper>
