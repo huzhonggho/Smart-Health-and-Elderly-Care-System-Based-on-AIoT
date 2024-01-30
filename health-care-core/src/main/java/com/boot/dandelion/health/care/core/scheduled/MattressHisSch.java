@@ -19,10 +19,10 @@ public class MattressHisSch {
     private final String MATTRESSID = "B00681";
     private final String COMMAND = "b9";
 
-    @Scheduled(cron = "0 12 20 * * ?")
+    @Scheduled(cron = "0 50 12 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-07");
+            LocalDate startDate = LocalDate.parse("2023-12-10");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
             System.out.println("start");

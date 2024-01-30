@@ -11,7 +11,7 @@
         <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
         <result column="turn" jdbcType="VARCHAR" property="turn"/>
         <result column="date" jdbcType="VARCHAR" property="date"/>
-        <result column="alam" jdbcType="VARCHAR" property="date"/>
+        <result column="alam" jdbcType="VARCHAR" property="alam"/>
         <result column="duration" jdbcType="VARCHAR" property="duration"/>
     </resultMap>
 
