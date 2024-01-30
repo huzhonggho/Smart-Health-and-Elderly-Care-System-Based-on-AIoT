@@ -1,6 +1,8 @@
 package com.boot.dandelion.health.care.core.service.impl;
 
+import com.boot.dandelion.health.care.common.util.DateFilterUtil;
 import com.boot.dandelion.health.care.core.service.UserTemDetailsService;
+import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.entity.UserTemDetails;
 import com.boot.dandelion.health.care.dao.mapper.UserTemDetailsMapper;
 import org.springframework.stereotype.Service;
@@ -40,4 +42,11 @@ public class UserTemDetailsServiceImpl implements UserTemDetailsService {
     public List<UserTemDetails> selectAll() {
         return userTemDetailsMapper.selectAll();
     }
+
+    @Override
+    public List<UserTemDetails> showBetweenDate(String start, String end) {
+        DateFilterUtil<UserTemDetails> util = new DateFilterUtil<>();
+        List<UserTemDetails> allData = userTemDetailsMapper.selectAll();
+        List<UserTemDetails> filteredData = util.filterDataByDate(allData, start, end, UserTemDetails::parseTimeToDate);
+        return filteredData;    }
 }

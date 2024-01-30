@@ -5,8 +5,6 @@ import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
 import com.boot.dandelion.health.care.core.service.UserBloodDetailsService;
 import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
-import com.boot.dandelion.health.care.dao.entity.UserBloodSugar;
-import com.boot.dandelion.health.care.dao.entity.UserTemDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.PropertySource;
@@ -104,7 +102,7 @@ public class UserBloodDetailsController {
     public ResponseWrapper<List<UserBloodDetails>> getAll() {
         ResponseWrapper<List<UserBloodDetails>> responseWrapper = new ResponseWrapper<>();
         try {
-            List<UserBloodDetails> allData = userBloodDetailsService.show();
+            List<UserBloodDetails> allData = userBloodDetailsService.selectAll();
             responseWrapper.setData(allData);
             responseWrapper.setMsg("所有信息查询成功");
             responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
@@ -116,11 +114,11 @@ public class UserBloodDetailsController {
         return responseWrapper;
     }
 
-    @GetMapping("/showBetween{start}/{end}")
-    public ResponseWrapper<List<UserBloodDetails>> getBetween(@PathVariable("start") String start,@PathVariable("end") String end) {
+    @GetMapping("/showBetweenDate")
+    public ResponseWrapper<List<UserBloodDetails>> showBetweenDate(@RequestParam String start,@RequestParam String end) {
         ResponseWrapper<List<UserBloodDetails>> responseWrapper = new ResponseWrapper<>();
         try {
-            List<UserBloodDetails> allData = userBloodDetailsService.showBetween(start,end);
+            List<UserBloodDetails> allData = userBloodDetailsService.showBetweenDate(start,end);
             responseWrapper.setData(allData);
             responseWrapper.setMsg("所有信息查询成功");
             responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));

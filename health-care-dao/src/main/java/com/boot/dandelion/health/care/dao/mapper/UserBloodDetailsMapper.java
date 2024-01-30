@@ -18,5 +18,5 @@ public interface UserBloodDetailsMapper {
     // 根据租户ID和用户ID查询用户血压详细信息
     UserBloodDetails selectByPrimaryKey(UserBloodDetails userBloodDetails);
 
-    List<UserBloodDetails> show();
+    List<UserBloodDetails> selectAll();
 }

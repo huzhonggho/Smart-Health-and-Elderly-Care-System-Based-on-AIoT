@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MattressHisMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.MattressHistory">
+        <id column="historyId" jdbcType="INTEGER" property="historyId"/>
+        <result column="RR" jdbcType="INTEGER" property="RR"/>
+        <result column="HR" jdbcType="INTEGER" property="HR"/>
+        <result column="wet" jdbcType="VARCHAR" property="wet"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="turn" jdbcType="VARCHAR" property="turn"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="alam" jdbcType="VARCHAR" property="date"/>
+        <result column="duration" jdbcType="VARCHAR" property="duration"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        historyId, RR, HR, wet, state, turn, date,alam,mattressId,duration
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressHistory">
+        insert into mattress_history (RR, HR, wet, state, turn, date,alam,mattressId,duration)
+        values (#{RR,jdbcType=INTEGER}, #{HR,jdbcType=INTEGER}, #{wet,jdbcType=VARCHAR},
+                #{state,jdbcType=INTEGER}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByPageAndSearch" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY historyId
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+</mapper>

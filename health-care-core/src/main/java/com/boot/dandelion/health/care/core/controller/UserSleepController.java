@@ -4,6 +4,7 @@ package com.boot.dandelion.health.care.core.controller;
 import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
 import com.boot.dandelion.health.care.core.service.UserSleepService;
+import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.entity.UserSleep;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -21,7 +22,7 @@ import java.util.List;
         encoding = "utf-8")})
 @RestController
 @ResponseBody
-@RequestMapping("/userSleep")
+@RequestMapping("/api/userSleep")
 public class UserSleepController {
 
     @Autowired
@@ -41,6 +42,22 @@ public class UserSleepController {
             responseWrapper.setData(userList);
         } catch (Exception e) {
             log.error("用户列表展示失败：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+        }
+        return responseWrapper;
+    }
+
+    @GetMapping("/showBetweenDate")
+    public ResponseWrapper<List<UserSleep>> showBetweenDate(@RequestParam String start, @RequestParam String end) {
+        ResponseWrapper<List<UserSleep>> responseWrapper = new ResponseWrapper<>();
+        try {
+            List<UserSleep> allData = userSleepService.showBetweenDate(start,end);
+            responseWrapper.setData(allData);
+            responseWrapper.setMsg("所有信息查询成功");
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+        } catch (Exception e) {
+            log.error("所有信息查询失败：", ExceptionUtils.getStackTrace(e));
             responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
             responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
         }

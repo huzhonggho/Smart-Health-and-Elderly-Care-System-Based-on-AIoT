@@ -65,7 +65,7 @@
         WHERE tenant_id = #{tenantId,jdbcType=INTEGER} AND user_id = #{userId,jdbcType=VARCHAR}
     </select>
 
-    <select id="show" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails" resultMap="BaseResultMap">
+    <select id="selectAll" parameterType="com.boot.dandelion.health.care.dao.entity.UserBloodDetails" resultMap="BaseResultMap">
         SELECT
         <include refid="BaseColumnList"/>
         FROM user_blood_details

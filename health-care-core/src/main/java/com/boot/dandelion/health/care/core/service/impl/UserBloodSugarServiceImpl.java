@@ -1,6 +1,8 @@
 package com.boot.dandelion.health.care.core.service.impl;
 
+import com.boot.dandelion.health.care.common.util.DateFilterUtil;
 import com.boot.dandelion.health.care.core.service.UserBloodSugarService;
+import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.entity.UserBloodSugar;
 import com.boot.dandelion.health.care.dao.mapper.UserBloodSugarMapper;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,12 @@ public class UserBloodSugarServiceImpl implements UserBloodSugarService {
     public List<UserBloodSugar> selectAll() {
         return userBloodSugarMapper.selectAll();
     }
+
+    @Override
+    public List<UserBloodSugar> showBetweenDate(String start, String end) {
+        DateFilterUtil<UserBloodSugar> util = new DateFilterUtil<>();
+        List<UserBloodSugar> allData = userBloodSugarMapper.selectAll();
+        List<UserBloodSugar> filteredData = util.filterDataByDate(allData, start, end, UserBloodSugar::parseTimeToDate);
+        return filteredData;    }
 
 }

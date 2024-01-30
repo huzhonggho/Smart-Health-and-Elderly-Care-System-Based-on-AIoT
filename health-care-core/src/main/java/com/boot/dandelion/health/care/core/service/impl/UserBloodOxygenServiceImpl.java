@@ -1,6 +1,8 @@
 package com.boot.dandelion.health.care.core.service.impl;
 
+import com.boot.dandelion.health.care.common.util.DateFilterUtil;
 import com.boot.dandelion.health.care.core.service.UserBloodOxygenService;
+import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.entity.UserBloodOxygen;
 import com.boot.dandelion.health.care.dao.mapper.UserBloodOxygenMapper;
 import org.springframework.stereotype.Service;
@@ -41,4 +43,11 @@ public class UserBloodOxygenServiceImpl implements UserBloodOxygenService {
         return userBloodOxygenMapper.selectAll();
     }
 
+    @Override
+    public List<UserBloodOxygen> showBetweenDate(String start, String end) {
+        DateFilterUtil<UserBloodOxygen> util = new DateFilterUtil<>();
+        List<UserBloodOxygen> allData = userBloodOxygenMapper.selectAll();
+        List<UserBloodOxygen> filteredData = util.filterDataByDate(allData, start, end, UserBloodOxygen::parseTimeToDate);
+        return filteredData;
+    }
 }

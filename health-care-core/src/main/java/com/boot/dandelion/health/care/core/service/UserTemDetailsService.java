@@ -1,5 +1,6 @@
 package com.boot.dandelion.health.care.core.service;
 
+import com.boot.dandelion.health.care.dao.entity.UserBloodOxygen;
 import com.boot.dandelion.health.care.dao.entity.UserTemDetails;
 
 import java.util.List;
@@ -17,5 +18,8 @@ public interface UserTemDetailsService {
     UserTemDetails selectByPrimaryKey(UserTemDetails userTemDetails);
 
     List<UserTemDetails> selectAll();
+
+    List<UserTemDetails> showBetweenDate(String start, String end);
+
 
 }

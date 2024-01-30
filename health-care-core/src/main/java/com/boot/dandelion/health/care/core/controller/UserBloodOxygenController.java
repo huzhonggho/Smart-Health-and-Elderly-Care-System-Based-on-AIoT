@@ -3,6 +3,7 @@ package com.boot.dandelion.health.care.core.controller;
 import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
 import com.boot.dandelion.health.care.core.service.UserBloodOxygenService;
+import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.entity.UserBloodOxygen;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -136,4 +137,19 @@ public class UserBloodOxygenController {
         return responseWrapper;
     }
 
+    @GetMapping("/showBetweenDate")
+    public ResponseWrapper<List<UserBloodOxygen>> showBetweenDate(@RequestParam String start, @RequestParam String end) {
+        ResponseWrapper<List<UserBloodOxygen>> responseWrapper = new ResponseWrapper<>();
+        try {
+            List<UserBloodOxygen> allData = userBloodOxygenService.showBetweenDate(start,end);
+            responseWrapper.setData(allData);
+            responseWrapper.setMsg("所有信息查询成功");
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+        } catch (Exception e) {
+            log.error("所有信息查询失败：", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
+        }
+        return responseWrapper;
+    }
 }

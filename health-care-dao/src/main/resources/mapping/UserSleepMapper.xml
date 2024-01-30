@@ -12,9 +12,9 @@
         <result column="user_id" jdbcType="VARCHAR" property="userId"/>
         <result column="thermometer_id" jdbcType="VARCHAR" property="thermometerId"/>
         <result column="time" jdbcType="VARCHAR" property="time"/>
-        <result column="start_time" jdbcType="VARCHAR" property="startTime"/>
-        <result column="end_time" jdbcType="VARCHAR" property="endTime"/>
-        <result column="awake_time" jdbcType="VARCHAR" property="awakeTime"/>
+        <result column="start_time" jdbcType="INTEGER" property="startTime"/>
+        <result column="end_time" jdbcType="INTEGER" property="endTime"/>
+        <result column="awake_time" jdbcType="INTEGER" property="awakeTime"/>
         <result column="sort_order" jdbcType="INTEGER" property="sortOrder"/>
         <result column="state" jdbcType="VARCHAR" property="state"/>
         <result column="remarks" jdbcType="VARCHAR" property="remarks"/>
@@ -22,12 +22,12 @@
         <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
         <result column="update_time" jdbcType="VARCHAR" property="updateTime"/>
         <result column="update_by" jdbcType="VARCHAR" property="updateBy"/>
-        <result column="data_sources" jdbcType="VARCHAR" property="dataSources"/>
+        <result column="data_source" jdbcType="VARCHAR" property="dataSource"/>
     </resultMap>
 
     <sql id="BaseColumnList">
         tenant_id,user_id,thermometer_id,time,start_time,end_time,awake_time,
-        sort_order,state,remarks,create_time,create_by,update_time,update_by,data_sources
+        sort_order,state,remarks,create_time,create_by,update_time,update_by,data_source
     </sql>
 
     <select id="selectAll" resultType="com.boot.dandelion.health.care.dao.entity.UserSleep">

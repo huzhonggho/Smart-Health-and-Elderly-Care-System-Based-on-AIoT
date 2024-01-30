@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import springfox.documentation.oas.annotations.EnableOpenApi;
@@ -33,6 +34,8 @@ import java.net.UnknownHostException;
 //开启swagger
 @EnableSwagger2
 @EnableOpenApi
+@EnableJpaRepositories(basePackages = "com.boot.dandelion.health.care.core.repository")
+
 public class Application {
 
     public static void main(String[] args) throws SocketException, UnknownHostException {

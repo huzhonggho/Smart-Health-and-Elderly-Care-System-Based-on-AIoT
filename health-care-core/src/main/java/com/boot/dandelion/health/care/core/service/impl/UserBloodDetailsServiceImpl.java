@@ -1,5 +1,6 @@
 package com.boot.dandelion.health.care.core.service.impl;
 
+import com.boot.dandelion.health.care.common.util.DateFilterUtil;
 import com.boot.dandelion.health.care.core.service.UserBloodDetailsService;
 import com.boot.dandelion.health.care.dao.entity.UserBloodDetails;
 import com.boot.dandelion.health.care.dao.mapper.UserBloodDetailsMapper;
@@ -42,35 +43,18 @@ public class UserBloodDetailsServiceImpl implements UserBloodDetailsService {
     }
 
     @Override
-    public List<UserBloodDetails> show() {
-        return userBloodDetailsMapper.show();
+    public List<UserBloodDetails> selectAll() {
+        return userBloodDetailsMapper.selectAll();
     }
 
     @Override
-    public List<UserBloodDetails> showBetween(String start, String end) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date startDate;
-        Date endDate;
-        try {
-            startDate = dateFormat.parse(start);
-            endDate = dateFormat.parse(end);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+    public List<UserBloodDetails> showBetweenDate(String start, String end) {
 
-        List<UserBloodDetails> allData = userBloodDetailsMapper.show();
-        List<UserBloodDetails> filteredData = allData.stream()
-                .filter(data -> {
-                    try {
-                        Date dataDate = dateFormat.parse(data.getTime());
-                        return dataDate.compareTo(startDate) >= 0 && dataDate.compareTo(endDate) <= 0;
-                    } catch (ParseException e) {
-                        // 处理日期解析异常
-                        e.printStackTrace();
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
+        DateFilterUtil<UserBloodDetails> util = new DateFilterUtil<>();
+        List<UserBloodDetails> allData = userBloodDetailsMapper.selectAll();
+        List<UserBloodDetails> filteredData = util.filterDataByDate(allData, start, end, UserBloodDetails::parseTimeToDate);
         return filteredData;
     }
+
+
 }

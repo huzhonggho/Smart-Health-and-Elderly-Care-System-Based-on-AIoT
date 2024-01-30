@@ -1,9 +1,14 @@
 package com.boot.dandelion.health.care.dao.entity;
 
 
+import com.sun.prism.shader.Solid_ImagePattern_Loader;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -40,5 +45,13 @@ public class UserBloodDetails {
 
     private String dataSource;
 
-    // 添加构造函数、Getter和Setter方法等
+    public Date parseTimeToDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            return dateFormat.parse(this.time);
+        }catch (ParseException e){
+            e.printStackTrace();
+        }
+        return  null;
+    }
 }

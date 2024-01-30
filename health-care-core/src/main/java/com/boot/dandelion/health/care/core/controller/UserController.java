@@ -81,17 +81,17 @@ public class UserController {
                     loginInfo.put("loginUser", lawUser);
 
                     // 根据user状态和权限判断
-                    if(USEING.equals(lawUser.getStatus())){
-                        if(lawUser.getAuthority() == 1){
+                    if (USEING.equals(lawUser.getStatus())) {
+                        if (lawUser.getAuthority() == 1) {
                             responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGIN_SUCCESS.getCode()));
                             responseWrapper.setMsg(ResultCodeEnum.LOGIN_SUCCESS.getName());
                             responseWrapper.setData(loginInfo);
-                        }else{
+                        } else {
                             responseWrapper.setCode(String.valueOf(ResultCodeEnum.IS_NOT_ADMIN.getCode()));
                             responseWrapper.setMsg(ResultCodeEnum.IS_NOT_ADMIN.getName());
                         }
 
-                    }else{
+                    } else {
                         responseWrapper.setCode(String.valueOf(ResultCodeEnum.CANNOT_USE.getCode()));
                         responseWrapper.setMsg(ResultCodeEnum.CANNOT_USE.getName());
                     }
@@ -137,12 +137,12 @@ public class UserController {
                     loginInfo.put("loginUser", lawUser);
 
                     // 根据user状态和权限判断
-                    if(USEING.equals(lawUser.getStatus())){
+                    if (USEING.equals(lawUser.getStatus())) {
                         responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGIN_SUCCESS.getCode()));
                         responseWrapper.setMsg(ResultCodeEnum.LOGIN_SUCCESS.getName());
                         responseWrapper.setData(loginInfo);
 
-                    }else{
+                    } else {
                         responseWrapper.setCode(String.valueOf(ResultCodeEnum.CANNOT_USE.getCode()));
                         responseWrapper.setMsg(ResultCodeEnum.CANNOT_USE.getName());
                     }
@@ -171,10 +171,6 @@ public class UserController {
         BeanUtils.copyProperties(lawUser, userInfo);
         request.getSession().setAttribute(StaticBasicInfo.LOGIN_USER, userInfo);
     }
-
-
-
-
 
 
     /**
@@ -264,17 +260,17 @@ public class UserController {
                 if (userByLoginTel != null) {
                     //私钥解密数据库中的密码和传递过来的旧密码进行比对
                     String decryptPassword = RsaUtils.decryptByPrivateKey(RsaProperties.rsaPrivateKey, userByLoginTel.getPassword());
-                    if(decryptPassword.equals(user.getOldPassword())){
+                    if (decryptPassword.equals(user.getOldPassword())) {
                         //密码一致
                         String encryNewPassword = RsaUtils.encryptByPublicKey(RsaProperties.rsaPublicKey, user.getPassword());
                         user.setPassword(encryNewPassword);
                         userService.updateUserPassword(user);
                         responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
                         responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-                        log.info("修改手机号为{}的用户修改密码成功",user.getTel());
-                    }else{
+                        log.info("修改手机号为{}的用户修改密码成功", user.getTel());
+                    } else {
 
-                        log.error("修改手机号为{}的密码,但是旧密码不正确",user.getTel());
+                        log.error("修改手机号为{}的密码,但是旧密码不正确", user.getTel());
                         responseWrapper.setMsg("旧密码不正确");
                         responseWrapper.setCode(String.valueOf(500));
                     }
@@ -379,25 +375,25 @@ public class UserController {
         return responseWrapper;
     }
 
-/**
- * @description 编辑用户信息
- * @param user 
- * @return com.boot.dandelion.health.care.common.wrapper.ResponseWrapper<java.lang.Object> 
- * @create 2023/1/9 23:27
- */
+    /**
+     * @param user
+     * @return com.boot.dandelion.health.care.common.wrapper.ResponseWrapper<java.lang.Object>
+     * @description 编辑用户信息
+     * @create 2023/1/9 23:27
+     */
     @PostMapping("/editUser")
-    public ResponseWrapper<Object> editUser(@RequestBody User user){
+    public ResponseWrapper<Object> editUser(@RequestBody User user) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
             int num = userService.updateUser(user);
-            if(num==1){
+            if (num == 1) {
                 responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
                 responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-            }else{
+            } else {
                 responseWrapper.setMsg("不可修改手机号或其他错误");
                 responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
             }
-            
+
         } catch (Exception e) {
             log.error("用户信息修改失败：{}", ExceptionUtils.getStackTrace(e));
             responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
@@ -409,17 +405,17 @@ public class UserController {
     }
 
     /**
+     * @param user
+     * @return com.boot.dandelion.health.care.common.wrapper.ResponseWrapper<java.lang.Object>
      * @description 根据手机号删除用户
-     * @param user 
-     * @return com.boot.dandelion.health.care.common.wrapper.ResponseWrapper<java.lang.Object> 
      * @create 2023/1/9 23:28
      */
     @PostMapping("/delUser")
-    public ResponseWrapper<Object> delUser(@RequestBody User user){
+    public ResponseWrapper<Object> delUser(@RequestBody User user) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
             int num = userService.delUser(user);
-            if(num==1){
+            if (num == 1) {
                 responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
                 responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
             }
@@ -488,33 +484,33 @@ public class UserController {
             boolean Flag1 = telNotEmpty && telNotBlank;
             boolean Flag2 = nameNotEmpty && nameNotBlank;
             boolean Flag3 = deptNotEmpty && deptNotBlank;
-            if(Flag3 && Flag2 && Flag1){
+            if (Flag3 && Flag2 && Flag1) {
                 User userByLoginTel = userService.getUserByLoginTel(tel);
-                if(userByLoginTel != null){
+                if (userByLoginTel != null) {
                     String name1 = userByLoginTel.getName();
                     String dept1 = userByLoginTel.getDept();
-                    if(name1.equals(name)){
-                        if(dept1.equals(dept)){
+                    if (name1.equals(name)) {
+                        if (dept1.equals(dept)) {
                             String encryPassword = RsaUtils.encryptByPublicKey(RsaProperties.rsaPublicKey, resetPwd);
                             userByLoginTel.setPassword(encryPassword);
                             userService.updateUser(userByLoginTel);
                             responseWrapper.setMsg("重置密码：123456");
                             responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-                        }else{
+                        } else {
                             responseWrapper.setMsg("该用户部门错误!");
                             responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
                         }
-                    }else{
+                    } else {
                         responseWrapper.setMsg("该用户名称错误!");
                         responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
                     }
-                }else{
+                } else {
                     responseWrapper.setMsg("该手机号关联用户不存在，请联系管理员!");
                     responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
                 }
 
 
-            }else{
+            } else {
                 responseWrapper.setMsg("输入字段不能为空或空行");
                 responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
             }

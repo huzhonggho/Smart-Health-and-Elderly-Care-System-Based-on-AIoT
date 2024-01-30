@@ -1,5 +1,6 @@
 package com.boot.dandelion.health.care.core.service;
 
+import com.boot.dandelion.health.care.dao.entity.UserBloodOxygen;
 import com.boot.dandelion.health.care.dao.entity.UserBloodSugar;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface UserBloodSugarService {
     UserBloodSugar selectByPrimaryKey(UserBloodSugar userBloodSugar);
 
     List<UserBloodSugar> selectAll();
+
+    List<UserBloodSugar> showBetweenDate(String start, String end);
 
 }
