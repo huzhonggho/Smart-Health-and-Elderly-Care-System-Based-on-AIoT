@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.TurnBodyMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.TurnBody">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="datadate" jdbcType="VARCHAR" property="datadate"/>
+        <result column="valuee" jdbcType="VARCHAR" property="valuee"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id,idDevice,datadate, valuee
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.TurnBody" useGeneratedKeys="true" keyProperty="id">
+        insert into turnBody (id, mattressId, datadate, valuee)
+        values (#{id,jdbcType=INTEGER}, #{mattressId,jdbcType=VARCHAR},
+                #{datadate,jdbcType=VARCHAR}, #{valuee,jdbcType=VARCHAR})
+    </insert>
+    <select id="selectByPageAndSearch" resultType="com.boot.dandelion.health.care.dao.entity.TurnBody">
+        SELECT <include refid="BaseColumnList"/>
+        FROM turnBody
+        WHERE start >= STR_TO_DATE('datadate', 'YYYY-MM-DD HH24:MI:SS')
+        and ende &lt;= STR_TO_DATE('datadate', 'YYYY-MM-DD HH24:MI:SS') and
+        mattressId = #{mattressId, jdbcType=VARCHAR}
+        ORDER BY id
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+</mapper>

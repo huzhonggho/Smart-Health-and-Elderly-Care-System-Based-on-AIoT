@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.HistoricalRecordMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.HistoricalRecord">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="RR" jdbcType="VARCHAR" property="RR"/>
+        <result column="HR" jdbcType="VARCHAR" property="HR"/>
+        <result column="wet" jdbcType="VARCHAR" property="wet"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="turn" jdbcType="VARCHAR" property="turn"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, RR, HR, wet, state, turn, date, mattressId
+    </sql>
+
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.HistoricalRecord">
+        insert into historicalRecord (id, RR, HR, wet, state, turn, date,mattressId)
+        values (#{id,jdbcType=INTEGER},#{RR,jdbcType=INTEGER}, #{HR,jdbcType=INTEGER}, #{wet,jdbcType=VARCHAR},
+                #{state,jdbcType=INTEGER}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByPageAndSearch" resultType="com.boot.dandelion.health.care.dao.entity.HistoricalRecord">
+        SELECT <include refid="BaseColumnList"/>
+        FROM historicalRecord
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        ORDER BY historyId
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+</mapper>

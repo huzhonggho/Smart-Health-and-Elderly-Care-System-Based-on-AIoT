@@ -1,8 +1,8 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.MattressHisService;
-import com.boot.dandelion.health.care.dao.entity.MattressHistory;
+import com.boot.dandelion.health.care.core.service.SleepResultService;
+import com.boot.dandelion.health.care.dao.entity.SleepEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,23 +13,23 @@ import java.time.LocalDate;
 
 @Component
 
-public class MattressHisSch {
+public class SleepDataSch {
     @Autowired
-    private MattressHisService mattressHistoryService;
+    private SleepResultService sleepResultService;
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "b9";
+    private final String COMMAND = "b8";
 
-//    @Scheduled(cron = "0 0 16 * * ?")
+//    @Scheduled(cron = "0 20 14 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-11");
+            LocalDate startDate = LocalDate.parse("2023-12-16");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
             System.out.println("start");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
-                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate + " 00:00:00|" + page + "|TestUser@T123456";
+                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate  + "|TestUser@T123456";
                 String response = CloudPlatformClientUtil.sendCommand(command);
 
                 // 处理返回数据
@@ -38,24 +38,18 @@ public class MattressHisSch {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
-                System.out.println(responseData);
+
                 if (firstElement.has("data")) {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            MattressHistory mattressHistory = new MattressHistory();
-
-                            mattressHistory.setRR(historyNode.path("RR").asInt());
-                            mattressHistory.setHR(historyNode.path("HR").asInt());
-                            mattressHistory.setWet(historyNode.path("wet").asText());
-                            mattressHistory.setState(historyNode.path("state").asText());
-                            mattressHistory.setTurn(historyNode.path("turn").asText());
-                            mattressHistory.setDate(startDate.toString());
-                            mattressHistory.setAlam(historyNode.path("alam").asText());
-                            mattressHistory.setMattressId(MATTRESSID);
-                            mattressHistory.setDuration(historyNode.path("date").asText());
-                            mattressHistoryService.insert(mattressHistory);
-                            System.out.println(mattressHistory);
+                            SleepEntity sleepEntity = new SleepEntity();
+                            sleepEntity.setEndDate(historyNode.path("enddate").asText());
+                            sleepEntity.setStartDate(historyNode.path("stardate").asText());
+                            sleepEntity.setState(historyNode.path("state").asText());
+                            sleepEntity.setIdDevice(MATTRESSID);
+//                            sleepResultService.insert(sleepEntity);
+                            System.out.println(sleepEntity);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页

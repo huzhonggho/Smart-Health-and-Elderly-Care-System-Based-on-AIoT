@@ -8,6 +8,9 @@ import java.util.Map;
 
 public interface MattressHisMapper {
     int insert(MattressHistory mattressHistory);
-    List<MattressHistory> selectByPageAndSearch(Map<String, Object> params);
 
+    List<MattressHistory> selectByPageAndSearch(Map<String, Object> params);
+    List<MattressHistory> selectByDateAndMattressId(Map<String, Object> params);
+
+    int selectCountByMattressIdAndDate(Map<String, Object> params);
 }

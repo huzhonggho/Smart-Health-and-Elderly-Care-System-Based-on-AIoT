@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.SleepResultMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.SleepEntity">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="idDevice" jdbcType="VARCHAR" property="idDevice"/>
+        <result column="startDate" jdbcType="VARCHAR" property="startDate"/>
+        <result column="endDate" jdbcType="VARCHAR" property="endDate"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id,idDevice,startDate,endDate,state
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.SleepEntity" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into SleepData (id,idDevice,startDate,endDate,state)
+        values (
+            #{id,jdbcType=INTEGER},
+            #{idDevice,jdbcType=VARCHAR},
+            #{startDate,jdbcType=VARCHAR},
+            #{endDate,jdbcType=VARCHAR},
+            #{state,jdbcType=VARCHAR}
+      )
+    </insert>
+
+    <select id="selectByPageAndSearch" resultType="com.boot.dandelion.health.care.dao.entity.SleepEntity">
+        select
+        <include refid="BaseColumnList"/>
+        from SleepData
+        where startDate >= STR_TO_DATE('startDate', 'YYYY-MM-DD HH24:MI:SS')
+        and endDate &lt;= STR_TO_DATE('endDate', 'YYYY-MM-DD HH24:MI:SS') and
+        idDevice = #{idDevice,jdbcType=VARCHAR}
+        ORDER BY id
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+
+
+</mapper>

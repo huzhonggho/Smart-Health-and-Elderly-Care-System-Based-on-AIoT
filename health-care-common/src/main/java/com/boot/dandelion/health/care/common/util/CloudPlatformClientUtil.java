@@ -43,6 +43,22 @@ public class CloudPlatformClientUtil {
     public static String handleResponse(String responseData) {
         if (responseData.startsWith("cdb9")) {
             responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cda5")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cdb8")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cdg2")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cda9")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cdac")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cda8")) {
+            responseData = responseData.substring(4);
+        } else if (responseData.startsWith("cdaf")) {
+            responseData = responseData.substring(4);
+        }else if (responseData.startsWith("cdae")) {
+            responseData = responseData.substring(4);
         }
         return responseData;
     }

@@ -1,8 +1,8 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.MattressHisService;
-import com.boot.dandelion.health.care.dao.entity.MattressHistory;
+import com.boot.dandelion.health.care.core.service.DailyAlarmService;
+import com.boot.dandelion.health.care.dao.entity.DailyAlarm;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,49 +13,45 @@ import java.time.LocalDate;
 
 @Component
 
-public class MattressHisSch {
+public class DailyAlarmSch {
     @Autowired
-    private MattressHisService mattressHistoryService;
+    private DailyAlarmService dailyAlarmService;
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "b9";
+    private final String COMMAND = "g2";
 
-//    @Scheduled(cron = "0 0 16 * * ?")
+//    @Scheduled(cron = "30 47 15 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-11");
+            LocalDate startDate = LocalDate.parse("2023-12-10");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
             System.out.println("start");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
-                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate + " 00:00:00|" + page + "|TestUser@T123456";
+                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate + "|TestUser@T123456";
                 String response = CloudPlatformClientUtil.sendCommand(command);
 
                 // 处理返回数据
                 String responseData = CloudPlatformClientUtil.handleResponse(response);
-
+                System.out.println("数据" + responseData);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
-                System.out.println(responseData);
+
                 if (firstElement.has("data")) {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            MattressHistory mattressHistory = new MattressHistory();
+                            DailyAlarm dailyAlarm = new DailyAlarm();
 
-                            mattressHistory.setRR(historyNode.path("RR").asInt());
-                            mattressHistory.setHR(historyNode.path("HR").asInt());
-                            mattressHistory.setWet(historyNode.path("wet").asText());
-                            mattressHistory.setState(historyNode.path("state").asText());
-                            mattressHistory.setTurn(historyNode.path("turn").asText());
-                            mattressHistory.setDate(startDate.toString());
-                            mattressHistory.setAlam(historyNode.path("alam").asText());
-                            mattressHistory.setMattressId(MATTRESSID);
-                            mattressHistory.setDuration(historyNode.path("date").asText());
-                            mattressHistoryService.insert(mattressHistory);
-                            System.out.println(mattressHistory);
+                            dailyAlarm.setAla(historyNode.path("ala").asText());
+                            dailyAlarm.setEnde(historyNode.path("end").asText());
+                            dailyAlarm.setIntervale(historyNode.path("interval").asText());
+                            dailyAlarm.setStart(historyNode.path("start").asText());
+                            dailyAlarm.setMattressId(MATTRESSID);
+//                            dailyAlarmService.insert(dailyAlarm);
+                            System.out.println(dailyAlarm);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页

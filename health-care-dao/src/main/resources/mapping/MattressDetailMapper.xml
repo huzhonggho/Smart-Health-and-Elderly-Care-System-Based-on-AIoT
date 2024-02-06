@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MattressDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.MattressDetail">
+        <id column="detailId" jdbcType="INTEGER" property="detailId"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="awake" jdbcType="VARCHAR" property="awake"/>
+        <result column="inSleep" jdbcType="VARCHAR" property="inSleep"/>
+        <result column="shallowSleep" jdbcType="VARCHAR" property="shallowSleep"/>
+        <result column="deepSleep" jdbcType="VARCHAR" property="deepSleep"/>
+        <result column="totalSleep" jdbcType="VARCHAR" property="totalSleep"/>
+        <result column="numberOfAlarms" jdbcType="VARCHAR" property="numberOfAlarms"/>
+        <result column="numberOfFreeBeds" jdbcType="VARCHAR" property="numberOfFreeBeds"/>
+        <result column="respirationAverage" jdbcType="VARCHAR" property="respirationAverage"/>
+        <result column="respirationMax" jdbcType="VARCHAR" property="respirationMax"/>
+        <result column="respirationMin" jdbcType="VARCHAR" property="respirationMin"/>
+        <result column="heartRateAverage" jdbcType="VARCHAR" property="heartRateAverage"/>
+        <result column="heartRateMax" jdbcType="VARCHAR" property="heartRateMax"/>
+        <result column="heartRateMin" jdbcType="VARCHAR" property="heartRateMin"/>
+        <result column="general" jdbcType="VARCHAR" property="general"/>
+        <result column="heartRespirationRatio" jdbcType="VARCHAR" property="heartRespirationRatio"/>
+        <result column="scores" jdbcType="VARCHAR" property="scores"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        detailId, mattressId, date, awake, inSleep, shallowSleep, deepSleep, totalSleep,
+        numberOfAlarms, numberOfFreeBeds, respirationAverage, respirationMax, respirationMin,
+        heartRateAverage, heartRateMax, heartRateMin, general, heartRespirationRatio, scores
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressDetail">
+        insert into mattress_detail (mattressId, date, awake, inSleep, shallowSleep, deepSleep,
+                                     totalSleep, numberOfAlarms, numberOfFreeBeds, respirationAverage, respirationMax,
+                                     respirationMin, heartRateAverage, heartRateMax, heartRateMin, general,
+                                     heartRespirationRatio, scores)
+        values (#{mattressId,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{awake,jdbcType=VARCHAR},
+                #{inSleep,jdbcType=VARCHAR}, #{shallowSleep,jdbcType=VARCHAR}, #{deepSleep,jdbcType=VARCHAR},
+                #{totalSleep,jdbcType=VARCHAR}, #{numberOfAlarms,jdbcType=VARCHAR}, #{numberOfFreeBeds,jdbcType=VARCHAR},
+                #{respirationAverage,jdbcType=VARCHAR}, #{respirationMax,jdbcType=VARCHAR}, #{respirationMin,jdbcType=VARCHAR},
+                #{heartRateAverage,jdbcType=VARCHAR}, #{heartRateMax,jdbcType=VARCHAR}, #{heartRateMin,jdbcType=VARCHAR},
+                #{general,jdbcType=VARCHAR}, #{heartRespirationRatio,jdbcType=VARCHAR}, #{scores,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByDateAndMattressId" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM mattress_detail
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+    </select>
+</mapper>

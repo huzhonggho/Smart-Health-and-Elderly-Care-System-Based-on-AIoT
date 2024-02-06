@@ -14,14 +14,24 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class MattressHisServiceImpl implements MattressHisService {
     @Resource
-    private MattressHisMapper mattressHisMapper;
+    private MattressHisMapper mapper;
     @Override
     public int insert(MattressHistory mattressHistory) {
-        return mattressHisMapper.insert(mattressHistory);
+        return mapper.insert(mattressHistory);
     }
 
     @Override
     public List<MattressHistory> selectByPageAndSearch(Map<String, Object> params) {
-        return mattressHisMapper.selectByPageAndSearch(params);
+        return mapper.selectByPageAndSearch(params);
+    }
+
+    @Override
+    public List<MattressHistory> selectByDateAndMattressId(Map<String, Object> params) {
+        return mapper.selectByDateAndMattressId(params);
+    }
+
+    @Override
+    public int selectCountByMattressIdAndDate(Map<String, Object> params) {
+        return mapper.selectCountByMattressIdAndDate(params);
     }
 }

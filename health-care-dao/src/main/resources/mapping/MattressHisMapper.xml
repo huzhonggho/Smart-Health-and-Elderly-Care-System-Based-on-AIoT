@@ -7,7 +7,7 @@
         <result column="RR" jdbcType="INTEGER" property="RR"/>
         <result column="HR" jdbcType="INTEGER" property="HR"/>
         <result column="wet" jdbcType="VARCHAR" property="wet"/>
-        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
         <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
         <result column="turn" jdbcType="VARCHAR" property="turn"/>
         <result column="date" jdbcType="VARCHAR" property="date"/>
@@ -22,7 +22,7 @@
     <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressHistory">
         insert into mattress_history (RR, HR, wet, state, turn, date,alam,mattressId,duration)
         values (#{RR,jdbcType=INTEGER}, #{HR,jdbcType=INTEGER}, #{wet,jdbcType=VARCHAR},
-                #{state,jdbcType=INTEGER}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR})
+                #{state,jdbcType=VARCHAR}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR})
     </insert>
 
     <select id="selectByPageAndSearch" resultMap="BaseResultMap" parameterType="map">
@@ -30,7 +30,34 @@
         FROM mattress_history
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
+        <if test="state != null and state != ''">
+            AND state = #{state, jdbcType=VARCHAR}
+        </if>
+        <if test="alam != null and alam != ''">
+            AND alam = #{alam, jdbcType=VARCHAR}
+        </if>
         ORDER BY historyId
         LIMIT #{pageSize} OFFSET #{offset}
     </select>
+
+    <select id="selectCountByMattressIdAndDate" resultType="int" parameterType="map">
+        SELECT COUNT(*)
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        <if test="state != null and state != ''">
+            AND state = #{state, jdbcType=VARCHAR}
+        </if>
+        <if test="alam != null and alam != ''">
+            AND alam = #{alam, jdbcType=VARCHAR}
+        </if>
+    </select>
+
+    <select id="selectByDateAndMattressId" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date,jdbcType=VARCHAR}
+    </select>
+
 </mapper>

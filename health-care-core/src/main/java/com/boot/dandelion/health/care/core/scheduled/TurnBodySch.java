@@ -1,8 +1,8 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.MattressHisService;
-import com.boot.dandelion.health.care.dao.entity.MattressHistory;
+import com.boot.dandelion.health.care.core.service.TurnBodyService;
+import com.boot.dandelion.health.care.dao.entity.TurnBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,49 +13,44 @@ import java.time.LocalDate;
 
 @Component
 
-public class MattressHisSch {
+public class TurnBodySch {
     @Autowired
-    private MattressHisService mattressHistoryService;
+    private TurnBodyService turnBodyService;
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "b9";
+    private final String COMMAND = "a8";
+    private final String CID = "a8323";  //社区id
 
-//    @Scheduled(cron = "0 0 16 * * ?")
+//    @Scheduled(cron = "20 08 17 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-11");
+            LocalDate startDate = LocalDate.parse("2023-12-10");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
             System.out.println("start");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
-                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate + " 00:00:00|" + page + "|TestUser@T123456";
+                String command = "fa" + COMMAND + "323|" + MATTRESSID + "|" + startDate + "|00:00:01|" + startDate + "23:59:59" + "|TestUser@T123456";
                 String response = CloudPlatformClientUtil.sendCommand(command);
 
                 // 处理返回数据
                 String responseData = CloudPlatformClientUtil.handleResponse(response);
-
+                System.out.println("数据" + responseData);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
-                System.out.println(responseData);
+
                 if (firstElement.has("data")) {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            MattressHistory mattressHistory = new MattressHistory();
+                            TurnBody turnBody = new TurnBody();
 
-                            mattressHistory.setRR(historyNode.path("RR").asInt());
-                            mattressHistory.setHR(historyNode.path("HR").asInt());
-                            mattressHistory.setWet(historyNode.path("wet").asText());
-                            mattressHistory.setState(historyNode.path("state").asText());
-                            mattressHistory.setTurn(historyNode.path("turn").asText());
-                            mattressHistory.setDate(startDate.toString());
-                            mattressHistory.setAlam(historyNode.path("alam").asText());
-                            mattressHistory.setMattressId(MATTRESSID);
-                            mattressHistory.setDuration(historyNode.path("date").asText());
-                            mattressHistoryService.insert(mattressHistory);
-                            System.out.println(mattressHistory);
+                            turnBody.setDatadate(historyNode.path("DATA_DATE").asText());
+                            turnBody.setValuee(historyNode.path("Value").asText());
+                            turnBody.setMattressId(MATTRESSID);
+//                            turnBodyService.insert(turnBody);
+                            System.out.println(turnBody);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页

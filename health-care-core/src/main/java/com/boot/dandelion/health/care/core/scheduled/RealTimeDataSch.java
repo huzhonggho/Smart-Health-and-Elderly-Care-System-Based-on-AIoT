@@ -1,8 +1,8 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.MattressHisService;
-import com.boot.dandelion.health.care.dao.entity.MattressHistory;
+import com.boot.dandelion.health.care.core.service.RealTimeDataService;
+import com.boot.dandelion.health.care.dao.entity.RealTimeData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,24 +12,24 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDate;
 
 @Component
-
-public class MattressHisSch {
+public class RealTimeDataSch {
     @Autowired
-    private MattressHisService mattressHistoryService;
+    private RealTimeDataService realTimeDataService;
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "b9";
+    private final String COMMAND = "a5";
 
-//    @Scheduled(cron = "0 0 16 * * ?")
+//    @Scheduled(cron = "0 59 13 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-11");
+            LocalDate startDate = LocalDate.parse("2023-12-16");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
             System.out.println("start");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
-                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate + " 00:00:00|" + page + "|TestUser@T123456";
+                String command = "fa" + COMMAND + MATTRESSID +  "|TestUser@T123456";
+//                String command = "faa5B00681|TestUser@T123456";
                 String response = CloudPlatformClientUtil.sendCommand(command);
 
                 // 处理返回数据
@@ -38,24 +38,22 @@ public class MattressHisSch {
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
-                System.out.println(responseData);
+                System.out.println("结果：" + firstElement);
                 if (firstElement.has("data")) {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            MattressHistory mattressHistory = new MattressHistory();
+                            RealTimeData realTimeData = new RealTimeData();
 
-                            mattressHistory.setRR(historyNode.path("RR").asInt());
-                            mattressHistory.setHR(historyNode.path("HR").asInt());
-                            mattressHistory.setWet(historyNode.path("wet").asText());
-                            mattressHistory.setState(historyNode.path("state").asText());
-                            mattressHistory.setTurn(historyNode.path("turn").asText());
-                            mattressHistory.setDate(startDate.toString());
-                            mattressHistory.setAlam(historyNode.path("alam").asText());
-                            mattressHistory.setMattressId(MATTRESSID);
-                            mattressHistory.setDuration(historyNode.path("date").asText());
-                            mattressHistoryService.insert(mattressHistory);
-                            System.out.println(mattressHistory);
+                            realTimeData.setRR(historyNode.path("RR").asText());
+                            realTimeData.setHR(historyNode.path("HR").asText());
+                            realTimeData.setState(historyNode.path("STATE").asText());
+                            realTimeData.setAlam(historyNode.path("ALAM").asText());
+                            realTimeData.setPressure((historyNode.path("Pressure").asText()));
+                            realTimeData.setSleep((historyNode.path("SLEEP").asText()));
+                            realTimeData.setMattressId(MATTRESSID);
+//                            realTimeDataService.insert(realTimeData);
+                            System.out.println(realTimeData);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页

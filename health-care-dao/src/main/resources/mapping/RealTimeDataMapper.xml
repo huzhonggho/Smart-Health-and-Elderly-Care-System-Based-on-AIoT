@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.RealTimeDataMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.RealTimeData">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="RR" jdbcType="VARCHAR" property="RR"/>
+        <result column="HR" jdbcType="VARCHAR" property="HR"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="alam" jdbcType="VARCHAR" property="alam"/>
+        <result column="sleep" jdbcType="VARCHAR" property="sleep"/>
+        <result column="pressure" jdbcType="VARCHAR" property="pressure"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        id, RR, HR, state,alam,mattressId, sleep, pressure
+    </sql>
+<!--    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.RealTimeData">-->
+<!--        insert into mattress_history (RR, HR, wet, state, turn, date,alam,mattressId,duration)-->
+<!--        values (#{RR,jdbcType=INTEGER}, #{HR,jdbcType=INTEGER}, #{wet,jdbcType=VARCHAR},-->
+<!--                #{state,jdbcType=INTEGER}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR})-->
+<!--    </insert>-->
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.RealTimeData" useGeneratedKeys="true" keyProperty="id">
+        insert into realTimeData (id, RR, HR, state,alam,mattressId, sleep, pressure)
+        values (#{id,jdbcType=INTEGER}, #{RR,jdbcType=VARCHAR}, #{HR,jdbcType=VARCHAR},
+                #{state,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR},
+                #{sleep,jdbcType=VARCHAR}, #{pressure, jdbcType=VARCHAR})
+    </insert>
+    <select id="selectByPageAndSearch" resultType="com.boot.dandelion.health.care.dao.entity.RealTimeData">
+        SELECT <include refid="BaseColumnList"/>
+        FROM realTimeData
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        ORDER BY id
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+</mapper>

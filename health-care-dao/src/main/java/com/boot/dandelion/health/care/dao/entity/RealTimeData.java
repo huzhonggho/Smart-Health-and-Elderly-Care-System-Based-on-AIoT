@@ -7,15 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MattressHistory {
-    private Integer historyId;
-    private Integer RR;
-    private Integer HR;
-    private String wet;
+public class RealTimeData {
+    private Integer id;
+    private String RR;
+    private String HR;
+    private String sleep;
     private String state;
-    private String turn;
-    private String date;
     private String alam;
     private String mattressId;
-    private String duration;
+    private String pressure;
 }
