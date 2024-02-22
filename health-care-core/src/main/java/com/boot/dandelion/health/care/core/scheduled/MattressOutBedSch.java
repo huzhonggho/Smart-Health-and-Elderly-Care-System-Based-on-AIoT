@@ -1,40 +1,44 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.SleepResultService;
-import com.boot.dandelion.health.care.dao.entity.SleepEntity;
+import com.boot.dandelion.health.care.core.service.MattressOutBedService;
+import com.boot.dandelion.health.care.dao.entity.MattressOutBed;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 @Component
 
-public class SleepDataSch {
+public class MattressOutBedSch {
     @Autowired
-    private SleepResultService sleepResultService;
+    private MattressOutBedService service;
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "b8";
+    private final String COMMAND = "a9";
+    private final String CID = "TestUnit";  //社区id
+    private SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-//    @Scheduled(cron = "0 20 14 * * ?")
+    // 定义输出日期的格式
+    private SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+//    @Scheduled(cron = "0 35 18 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-16");
+            LocalDate startDate = LocalDate.parse("2023-12-09");
             LocalDate endDate = LocalDate.parse("2023-12-17");
-            int page = 1;
-            System.out.println("start");
+            System.out.println("MattressOutBedSch");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
-
-                String command = "fa" + COMMAND + MATTRESSID + "|" + startDate  + "|TestUser@T123456";
+                String command = "fa" + COMMAND + CID + "|" + MATTRESSID + "|" + startDate + "|00:00:01|" + "23:59:59" + "|TestUser@T123456";
                 String response = CloudPlatformClientUtil.sendCommand(command);
 
                 // 处理返回数据
                 String responseData = CloudPlatformClientUtil.handleResponse(response);
-
+                System.out.println("数据:" + responseData);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
@@ -43,28 +47,26 @@ public class SleepDataSch {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            SleepEntity sleepEntity = new SleepEntity();
-                            sleepEntity.setEndDate(historyNode.path("enddate").asText());
-                            sleepEntity.setStartDate(historyNode.path("stardate").asText());
-                            sleepEntity.setState(historyNode.path("state").asText());
-                            sleepEntity.setIdDevice(MATTRESSID);
-//                            sleepResultService.insert(sleepEntity);
-                            System.out.println(sleepEntity);
+                            MattressOutBed outBed = new MattressOutBed();
+
+                            outBed.setStart(historyNode.path("start").asText().substring(historyNode.path("start").asText().indexOf(" ") + 1));
+                            outBed.setEnd(historyNode.path("end").asText().substring(historyNode.path("end").asText().indexOf(" ") + 1));
+                            outBed.setDate(outputFormat.format(inputFormat.parse(historyNode.path("start").asText())));
+                            outBed.setMattressId(MATTRESSID);
+                            service.insert(outBed);
+                            System.out.println(outBed);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页
-                        System.out.println(startDate + "||||||" + page);
-                        page++;
-                    } else {
-                        // 数据为空，将page归1，日期加一天
-                        page = 1;
-                        startDate = startDate.plusDays(1);
+                        System.out.println(startDate);
                     }
                 } else {
                     // 如果没有data节点，处理错误或者其他情况
                     System.err.println("Invalid response format: " + responseData);
                     break;
                 }
+                startDate = startDate.plusDays(1);
+
             }
             System.out.println("end");
 

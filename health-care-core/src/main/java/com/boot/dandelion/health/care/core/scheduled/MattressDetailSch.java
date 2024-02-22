@@ -27,7 +27,7 @@ public class MattressDetailSch {
 
             LocalDate startDate = LocalDate.parse("2023-12-07");
             LocalDate endDate = LocalDate.parse("2023-12-17");
-            System.out.println("start:ae");
+            System.out.println("MattressDetailSch");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 

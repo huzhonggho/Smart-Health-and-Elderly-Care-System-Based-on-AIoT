@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MattressSleepMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.MattressSleep">
+        <result column="sleepId" jdbcType="INTEGER" property="sleepId"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="startDate" jdbcType="VARCHAR" property="startDate"/>
+        <result column="endDate" jdbcType="VARCHAR" property="endDate"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        sleepId,mattressId,date,startDate,endDate,state
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressSleep">
+        insert into mattress_sleep (mattressId,date,startDate,endDate,state)
+        values (
+            #{mattressId,jdbcType=VARCHAR},
+            #{date,jdbcType=VARCHAR},
+            #{startDate,jdbcType=VARCHAR},
+            #{endDate,jdbcType=VARCHAR},
+            #{state,jdbcType=VARCHAR}
+      )
+    </insert>
+
+    <select id="selectByDateAndMattressId" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM mattress_sleep
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+    </select>
+</mapper>

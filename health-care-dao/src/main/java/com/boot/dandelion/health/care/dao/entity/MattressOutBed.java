@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DailyAlarm {
-    private Integer id;
+public class MattressOutBed {
+    private Integer outId;
     private String start;
-    private String ende;
-    private String intervale;
-    private String ala;
+    private String end;
     private String mattressId;
+    private String date;
 }

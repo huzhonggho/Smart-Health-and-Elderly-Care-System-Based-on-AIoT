@@ -6,10 +6,8 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
-import com.boot.dandelion.health.care.core.service.MattressDetailService;
-import com.boot.dandelion.health.care.core.service.MattressHisService;
-import com.boot.dandelion.health.care.dao.entity.MattressDetail;
-import com.boot.dandelion.health.care.dao.entity.MattressHistory;
+import com.boot.dandelion.health.care.core.service.*;
+import com.boot.dandelion.health.care.dao.entity.*;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -17,7 +15,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import reactor.util.annotation.NonNull;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -42,6 +39,14 @@ public class MattressController {
     private MattressHisService mattressHisService;
     @Resource
     private MattressDetailService mattressDetailService;
+    @Resource
+    private MattressSleepService mattressSleepService;
+    @Resource
+    private MattressOutBedService mattressOutBedService;
+    @Resource
+    private MattressAlarmService mattressAlarmService;
+    @Resource
+    private MattressTurnBodyService mattressTurnBodyService;
 
     @ApiOperation("分页和模糊查询")
     @GetMapping(value = "/history/{page}/{size}")
@@ -119,7 +124,290 @@ public class MattressController {
             responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
         } catch (
                 Exception e) {
-            log.error("查询基本信息评审记录：{}", ExceptionUtils.getStackTrace(e));
+            log.error("查询详细信息出错信息：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+
+    }
+
+    @ApiOperation("获取睡眠阶段信息")
+    @GetMapping(value = "/sleep")
+    public ResponseWrapper<Object> getSleep(@RequestParam String mattressId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (mattressId == null || mattressId.equals("")) {
+                responseWrapper.setMsg("MattressId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
+            LocalDateTime yesterday = currentTime.minusDays(1);
+
+            Map<String, Object> todayParams = new HashMap<>();
+            todayParams.put("mattressId", mattressId);
+            todayParams.put("date", date);
+
+            List<MattressSleep> todayList = mattressSleepService.selectByDateAndMattressId(todayParams);
+
+            Map<String, Object> yesParams = new HashMap<>();
+            yesParams.put("mattressId", mattressId);
+            yesParams.put("date", LocalDate.parse(date).minusDays(1).toString());
+
+            List<MattressSleep> yesList = mattressSleepService.selectByDateAndMattressId(yesParams);
+            List<MattressSleep> allList = new ArrayList<>(yesList);
+            allList.addAll(todayList);
+            // 定义日期时间格式化器
+            if (allList.size() == 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setMsg("该时段无数据");
+                return responseWrapper;
+            }
+            // 获取昨天早上八点的时间
+            LocalDateTime yesterdayEightAM = LocalDateTime.of(yesterday.toLocalDate(), LocalTime.of(8, 0));
+
+            // 获取今天早上八点的时间
+            LocalDateTime todayEightAM = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(8, 0));
+            // 筛选昨天早上八点到今天早上八点的数据
+            List<MattressSleep> filteredList = allList.stream()
+                    .filter(sleep -> {
+                        LocalDateTime beforeSleep = LocalDateTime.parse(sleep.getDate() + " " + sleep.getStartDate(), formatter);
+                        LocalDateTime afterSleep = LocalDateTime.parse(sleep.getDate() + " " + sleep.getEndDate(), formatter);
+                        return ((beforeSleep.isAfter(yesterdayEightAM) && beforeSleep.isBefore(todayEightAM)) ||
+                                (afterSleep.isAfter(yesterdayEightAM) && afterSleep.isBefore(todayEightAM))) &&
+                                (!("4".equals(sleep.getState()) || "5".equals(sleep.getState())));
+                    })
+                    .collect(Collectors.toList());
+            //处理最后不符合元素
+            MattressSleep last = filteredList.get(filteredList.size() - 1);
+            if (LocalTime.parse(last.getStartDate()).compareTo(LocalTime.parse(last.getEndDate())) > 0) {
+                filteredList.remove(filteredList.size() - 1);
+            }
+            responseWrapper.setData(filteredList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (
+                Exception e) {
+            log.error("查询睡眠出错信息：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+
+    }
+
+    @ApiOperation("获取离床阶段信息")
+    @GetMapping(value = "/outBed")
+    public ResponseWrapper<Object> getOutBed(@RequestParam String mattressId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (mattressId == null || mattressId.equals("")) {
+                responseWrapper.setMsg("MattressId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
+            LocalDateTime yesterday = currentTime.minusDays(1);
+
+            Map<String, Object> todayParams = new HashMap<>();
+            todayParams.put("mattressId", mattressId);
+            todayParams.put("date", date);
+
+            List<MattressOutBed> todayList = mattressOutBedService.selectByDateAndMattressId(todayParams);
+
+            Map<String, Object> yesParams = new HashMap<>();
+            yesParams.put("mattressId", mattressId);
+            yesParams.put("date", LocalDate.parse(date).minusDays(1).toString());
+
+            List<MattressOutBed> yesList = mattressOutBedService.selectByDateAndMattressId(yesParams);
+            List<MattressOutBed> allList = new ArrayList<>(yesList);
+            allList.addAll(todayList);
+            // 定义日期时间格式化器
+            if (allList.size() == 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setMsg("该时段无数据");
+                return responseWrapper;
+            }
+            // 获取昨天早上八点的时间
+            LocalDateTime yesterdayEightAM = LocalDateTime.of(yesterday.toLocalDate(), LocalTime.of(8, 0));
+
+            // 获取今天早上八点的时间
+            LocalDateTime todayEightAM = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(8, 0));
+            // 筛选昨天早上八点到今天早上八点的数据
+            List<MattressOutBed> filteredList = allList.stream()
+                    .filter(sleep -> {
+                        LocalDateTime beforeSleep = LocalDateTime.parse(sleep.getDate() + " " + sleep.getStart(), formatter);
+                        LocalDateTime afterSleep = LocalDateTime.parse(sleep.getDate() + " " + sleep.getEnd(), formatter);
+                        return (beforeSleep.isAfter(yesterdayEightAM) && beforeSleep.isBefore(todayEightAM)) ||
+                                (afterSleep.isAfter(yesterdayEightAM) && afterSleep.isBefore(todayEightAM));
+                    })
+                    .collect(Collectors.toList());
+            //处理最后不符合元素
+//            MattressOutBed last = filteredList.get(filteredList.size() - 1);
+//            if (LocalTime.parse(last.getStartDate()).compareTo(LocalTime.parse(last.getEndDate())) > 0) {
+//                filteredList.remove(filteredList.size() - 1);
+//            }
+            responseWrapper.setData(filteredList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (
+                Exception e) {
+            log.error("查询离床出错信息：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+
+    }
+
+    @ApiOperation("获取翻身信息")
+    @GetMapping(value = "/turnBody")
+    public ResponseWrapper<Object> getTurnBody(@RequestParam String mattressId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (mattressId == null || mattressId.equals("")) {
+                responseWrapper.setMsg("MattressId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
+            LocalDateTime yesterday = currentTime.minusDays(1);
+
+            Map<String, Object> todayParams = new HashMap<>();
+            todayParams.put("mattressId", mattressId);
+            todayParams.put("date", date);
+
+            List<MattressTurnBody> todayList = mattressTurnBodyService.selectByDateAndMattressId(todayParams);
+
+            Map<String, Object> yesParams = new HashMap<>();
+            yesParams.put("mattressId", mattressId);
+            yesParams.put("date", LocalDate.parse(date).minusDays(1).toString());
+
+            List<MattressTurnBody> yesList = mattressTurnBodyService.selectByDateAndMattressId(yesParams);
+            List<MattressTurnBody> allList = new ArrayList<>(yesList);
+            allList.addAll(todayList);
+            // 定义日期时间格式化器
+            if (allList.size() == 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setMsg("该时段无数据");
+                return responseWrapper;
+            }
+            // 获取昨天早上八点的时间
+            LocalDateTime yesterdayEightAM = LocalDateTime.of(yesterday.toLocalDate(), LocalTime.of(8, 0));
+
+            // 获取今天早上八点的时间
+            LocalDateTime todayEightAM = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(8, 0));
+            // 筛选昨天早上八点到今天早上八点的数据
+            List<MattressTurnBody> filteredList = allList.stream()
+                    .filter(mattress -> {
+                        LocalDateTime time = LocalDateTime.parse(mattress.getDate() + " " + mattress.getDataTime(), formatter);
+                        return (time.isAfter(yesterdayEightAM) && time.isBefore(todayEightAM));
+                    })
+                    .collect(Collectors.toList());
+            //处理最后不符合元素
+//            MattressOutBed last = filteredList.get(filteredList.size() - 1);
+//            if (LocalTime.parse(last.getStartDate()).compareTo(LocalTime.parse(last.getEndDate())) > 0) {
+//                filteredList.remove(filteredList.size() - 1);
+//            }
+            responseWrapper.setData(filteredList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (
+                Exception e) {
+            log.error("查询翻身出错信息：", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+
+    }
+
+    @ApiOperation("获取警报信息")
+    @GetMapping(value = "/alarm")
+    public ResponseWrapper<Object> getalarm(@RequestParam String mattressId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (mattressId == null || mattressId.equals("")) {
+                responseWrapper.setMsg("MattressId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+            LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
+            LocalDateTime yesterday = currentTime.minusDays(1);
+
+            Map<String, Object> todayParams = new HashMap<>();
+            todayParams.put("mattressId", mattressId);
+            todayParams.put("date", date);
+
+            List<MattressAlarm> todayList = mattressAlarmService.selectByDateAndMattressId(todayParams);
+
+            Map<String, Object> yesParams = new HashMap<>();
+            yesParams.put("mattressId", mattressId);
+            yesParams.put("date", LocalDate.parse(date).minusDays(1).toString());
+
+            List<MattressAlarm> yesList = mattressAlarmService.selectByDateAndMattressId(yesParams);
+            List<MattressAlarm> allList = new ArrayList<>(yesList);
+            allList.addAll(todayList);
+            // 定义日期时间格式化器
+            if (allList.size() == 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setMsg("该时段无数据");
+                return responseWrapper;
+            }
+            // 获取昨天早上八点的时间
+            LocalDateTime yesterdayEightAM = LocalDateTime.of(yesterday.toLocalDate(), LocalTime.of(8, 0));
+
+            // 获取今天早上八点的时间
+            LocalDateTime todayEightAM = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(8, 0));
+            // 筛选昨天早上八点到今天早上八点的数据
+            List<MattressAlarm> filteredList = allList.stream()
+                    .filter(mattress -> {
+                        LocalDateTime beforeSleep = LocalDateTime.parse(mattress.getDate() + " " + mattress.getStart(), formatter);
+                        LocalDateTime afterSleep = LocalDateTime.parse(mattress.getDate() + " " + mattress.getEnd(), formatter);
+                        return (beforeSleep.isAfter(yesterdayEightAM) && beforeSleep.isBefore(todayEightAM)) ||
+                                (afterSleep.isAfter(yesterdayEightAM) && afterSleep.isBefore(todayEightAM));
+                    })
+                    .collect(Collectors.toList());
+            //处理最后不符合元素
+//            MattressOutBed last = filteredList.get(filteredList.size() - 1);
+//            if (LocalTime.parse(last.getStartDate()).compareTo(LocalTime.parse(last.getEndDate())) > 0) {
+//                filteredList.remove(filteredList.size() - 1);
+//            }
+            responseWrapper.setData(filteredList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (
+                Exception e) {
+            log.error("查询警报出错信息：{}", ExceptionUtils.getStackTrace(e));
             responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
             responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
         }

@@ -7,9 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TurnBody {
-    private Integer id;
-    private String datadate;
-    private String valuee;
+public class MattressTurnBody {
+    private Integer turnId;
     private String mattressId;
+    private String date;
+    private String dataTime;
+    private String dataValue;
+
+    private String duration;
 }

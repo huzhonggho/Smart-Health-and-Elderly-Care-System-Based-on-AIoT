@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MattressTurnBodyMapper">
+
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.MattressTurnBody">
+        <result column="turnId" jdbcType="INTEGER" property="turnId"/>
+        <result column="mattressId" jdbcType="VARCHAR" property="mattressId"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="dataTime" jdbcType="VARCHAR" property="dataTime"/>
+        <result column="dataValue" jdbcType="VARCHAR" property="dataValue"/>
+        <result column="duration" jdbcType="VARCHAR" property="duration"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        turnId,mattressId,date, dataValue,dataTime,duration
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressTurnBody">
+        insert into mattress_turn_body ( mattressId, date, dataTime,dataValue,duration)
+        values ( #{mattressId,jdbcType=VARCHAR},
+                #{date,jdbcType=VARCHAR},#{dataTime,jdbcType=VARCHAR}, #{dataValue,jdbcType=VARCHAR},#{duration,jdbcType=VARCHAR})
+    </insert>
+    <select id="selectByDateAndMattressId" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_turn_body
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

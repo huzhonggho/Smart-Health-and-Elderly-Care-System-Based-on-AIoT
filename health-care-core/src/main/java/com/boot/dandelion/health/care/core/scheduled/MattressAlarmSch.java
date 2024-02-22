@@ -1,31 +1,31 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
 import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
-import com.boot.dandelion.health.care.core.service.DailyAlarmService;
-import com.boot.dandelion.health.care.dao.entity.DailyAlarm;
+import com.boot.dandelion.health.care.core.service.MattressAlarmService;
+import com.boot.dandelion.health.care.dao.entity.MattressAlarm;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 
 @Component
 
-public class DailyAlarmSch {
+public class MattressAlarmSch {
     @Autowired
-    private DailyAlarmService dailyAlarmService;
+    private MattressAlarmService service;
     private final String MATTRESSID = "B00681";
     private final String COMMAND = "g2";
 
-//    @Scheduled(cron = "30 47 15 * * ?")
+    @Scheduled(cron = "0 10 17 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
-            LocalDate startDate = LocalDate.parse("2023-12-10");
+            LocalDate startDate = LocalDate.parse("2023-12-08");
             LocalDate endDate = LocalDate.parse("2023-12-17");
-            int page = 1;
-            System.out.println("start");
+            System.out.println("MattressAlarmSch");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
@@ -39,34 +39,33 @@ public class DailyAlarmSch {
                 JsonNode rootNode = objectMapper.readTree(responseData);
                 JsonNode firstElement = rootNode.get(0);
 
+                LocalDate currentDate = LocalDate.now();
+                String currentYear = String.valueOf(currentDate.getYear());
                 if (firstElement.has("data")) {
                     JsonNode dataNode = firstElement.get("data");
                     if (dataNode.isArray() && dataNode.size() > 0) {
                         for (JsonNode historyNode : dataNode) {
-                            DailyAlarm dailyAlarm = new DailyAlarm();
+                            MattressAlarm mattressAlarm = new MattressAlarm();
 
-                            dailyAlarm.setAla(historyNode.path("ala").asText());
-                            dailyAlarm.setEnde(historyNode.path("end").asText());
-                            dailyAlarm.setIntervale(historyNode.path("interval").asText());
-                            dailyAlarm.setStart(historyNode.path("start").asText());
-                            dailyAlarm.setMattressId(MATTRESSID);
-//                            dailyAlarmService.insert(dailyAlarm);
-                            System.out.println(dailyAlarm);
+                            mattressAlarm.setMattressId(MATTRESSID);
+                            mattressAlarm.setStart(historyNode.path("star").asText().substring(historyNode.path("star").asText().indexOf(" ") + 1));
+                            mattressAlarm.setEnd(historyNode.path("end").asText().substring(historyNode.path("end").asText().indexOf(" ") + 1));
+                            mattressAlarm.setIntervals(historyNode.path("interval").asText());
+                            mattressAlarm.setAla(historyNode.path("ala").asText());
+                            mattressAlarm.setDate("2023-"+historyNode.path("star").asText().split("\\s+")[0]);
+                            service.insert(mattressAlarm);
+                            System.out.println(mattressAlarm);
                         }
 
                         // 数据不为空，保持日期不变，继续请求下一页
-                        System.out.println(startDate + "||||||" + page);
-                        page++;
-                    } else {
-                        // 数据为空，将page归1，日期加一天
-                        page = 1;
-                        startDate = startDate.plusDays(1);
+                        System.out.println(startDate);
                     }
                 } else {
                     // 如果没有data节点，处理错误或者其他情况
                     System.err.println("Invalid response format: " + responseData);
                     break;
                 }
+                startDate = startDate.plusDays(1);
             }
             System.out.println("end");
 

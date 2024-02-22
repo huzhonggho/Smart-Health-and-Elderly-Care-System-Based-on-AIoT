@@ -1,8 +1,9 @@
 package com.boot.dandelion.health.care.core.service.impl;
 
-import com.boot.dandelion.health.care.core.service.TurnBodyService;
-import com.boot.dandelion.health.care.dao.entity.TurnBody;
-import com.boot.dandelion.health.care.dao.mapper.TurnBodyMapper;
+import com.boot.dandelion.health.care.core.service.MattressTurnBodyService;
+import com.boot.dandelion.health.care.dao.entity.MattressOutBed;
+import com.boot.dandelion.health.care.dao.entity.MattressTurnBody;
+import com.boot.dandelion.health.care.dao.mapper.MattressTurnBodyMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,19 +13,20 @@ import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class TurnBodyServiceImpl implements TurnBodyService {
+public class TurnBodyServiceImpl implements MattressTurnBodyService {
 
     @Resource
-    private TurnBodyMapper turnBodyMapper;
+    private MattressTurnBodyMapper mattressTurnBodyMapper;
 
     @Override
-    public int insert(TurnBody turnBody) {
-        return turnBodyMapper.insert(turnBody);
+    public int insert(MattressTurnBody turnBody) {
+        return mattressTurnBodyMapper.insert(turnBody);
     }
 
     @Override
-    public List<TurnBody> selectByPageAndSearch(Map<String, Object> params) {
-        return turnBodyMapper.selectByPageAndSearch(params);
+    public List<MattressTurnBody> selectByDateAndMattressId(Map<String, Object> params) {
+        return mattressTurnBodyMapper.selectByDateAndMattressId(params);
     }
+
 
 }

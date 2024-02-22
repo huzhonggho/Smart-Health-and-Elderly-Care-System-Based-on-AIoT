@@ -25,7 +25,7 @@ public class MattressHisSch {
             LocalDate startDate = LocalDate.parse("2023-12-11");
             LocalDate endDate = LocalDate.parse("2023-12-17");
             int page = 1;
-            System.out.println("start");
+            System.out.println("MattressHisSch");
             while (!startDate.isAfter(endDate)) {
                 // 使用工具类发送指令
 
