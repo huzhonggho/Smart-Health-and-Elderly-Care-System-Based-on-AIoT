@@ -1,5 +1,7 @@
 package com.boot.dandelion.health.care.core.controller;
 
+import cn.hutool.core.util.StrUtil;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.boot.dandelion.health.care.common.condition.UserCondition;
 import com.boot.dandelion.health.care.common.entity.StaticBasicInfo;
 import com.boot.dandelion.health.care.common.entity.UserInfo;
@@ -10,8 +12,10 @@ import com.boot.dandelion.health.care.common.util.RsaUtils;
 import com.boot.dandelion.health.care.common.util.ValidatorUtils;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
 import com.boot.dandelion.health.care.core.config.RsaProperties;
+import com.boot.dandelion.health.care.core.service.UserDeviceService;
 import com.boot.dandelion.health.care.core.service.UserService;
 import com.boot.dandelion.health.care.dao.entity.User;
+import com.boot.dandelion.health.care.dao.entity.UserDevice;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.ApiOperation;
@@ -22,12 +26,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -42,7 +50,7 @@ import java.util.UUID;
 @PropertySources(value = {@PropertySource(value = {"classpath:important.properties", "classpath:application.properties"},
         encoding = "utf-8")})
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 public class UserController {
 
     private static final String USEING = "启用";
@@ -53,118 +61,250 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    /**
-     * @Description: 用户登录, 手机号就是账号，管理端登录
-     * @param: [user]
-     * @return: java.lang.String
-     * @author: shr
-     * @date: 2022/7/14
-     */
+    @Resource
+    private UserDeviceService userDeviceService;
+
     @PostMapping(value = "/login")
     public ResponseWrapper<Object> login(@RequestBody User user) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
-            User lawUser = userService.getUserByLoginTel(user.getTel());
-            if (lawUser != null) {
-                //rsa解密
-                String decryptPassword = RsaUtils.decryptByPrivateKey(RsaProperties.rsaPrivateKey, lawUser.getPassword());
-                if (decryptPassword.equals(user.getPassword())) {
-                    //密码正确
-                    //由于手机号唯一,直接拿手机号进行jwt编码
-                    String token = JwtUtil.createJWT(UUID.randomUUID().toString(), user.getTel(), null);
-
-                    HashMap<String, Object> loginInfo = new HashMap<>();
-
-                    loginInfo.put("token", token);
-
-                    lawUser.setPassword(null);
-                    loginInfo.put("loginUser", lawUser);
-
-                    // 根据user状态和权限判断
-                    if (USEING.equals(lawUser.getStatus())) {
-                        if (lawUser.getAuthority() == 1) {
-                            responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGIN_SUCCESS.getCode()));
-                            responseWrapper.setMsg(ResultCodeEnum.LOGIN_SUCCESS.getName());
-                            responseWrapper.setData(loginInfo);
-                        } else {
-                            responseWrapper.setCode(String.valueOf(ResultCodeEnum.IS_NOT_ADMIN.getCode()));
-                            responseWrapper.setMsg(ResultCodeEnum.IS_NOT_ADMIN.getName());
-                        }
-
-                    } else {
-                        responseWrapper.setCode(String.valueOf(ResultCodeEnum.CANNOT_USE.getCode()));
-                        responseWrapper.setMsg(ResultCodeEnum.CANNOT_USE.getName());
-                    }
-
-
-                } else {
-                    log.error("账号密码错误");
-                    responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
-                    responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
-                }
-            } else {
+            User lawUser = userService.selectUserByName(user.getUserName());
+            if (lawUser == null) {
                 log.error("用户名不存在");
                 responseWrapper.setMsg(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getName());
-                responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getCode()));
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
             }
+            String password = lawUser.getPassword();
+            String loginPassword = user.getPassword();
+            loginPassword = DigestUtils.md5DigestAsHex(loginPassword.getBytes());
+
+            if (!password.equals(loginPassword)) {
+                log.error("账号密码错误");
+                responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
+
+            }
+            //密码正确
+            Map<String, String> info = new HashMap<>();
+            info.put("userId", lawUser.getUserId().toString());
+            info.put("userName", lawUser.getUserName());
+            String token = JwtUtil.createToken(info);
+            HashMap<String, Object> loginInfo = new HashMap<>();
+
+            loginInfo.put("token", token);
+
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+            responseWrapper.setData(loginInfo);
         } catch (Exception e) {
             log.error("用户登陆失败：{}", ExceptionUtils.getStackTrace(e));
 
             responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
-            responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
         }
         return responseWrapper;
     }
 
-    @PostMapping(value = "/appLogin")
-    public ResponseWrapper<Object> appLogin(@RequestBody User user) {
+    @ApiOperation("检验秘钥")
+    @GetMapping(value = "/testToken")
+    public ResponseWrapper<Object> testToken(HttpServletRequest request) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
-            User lawUser = userService.getUserByLoginTel(user.getTel());
-            if (lawUser != null) {
-                //rsa解密
-                String decryptPassword = RsaUtils.decryptByPrivateKey(RsaProperties.rsaPrivateKey, lawUser.getPassword());
-                if (decryptPassword.equals(user.getPassword())) {
-                    //密码正确
-                    //由于手机号唯一,直接拿手机号进行jwt编码
-                    String token = JwtUtil.createJWT(UUID.randomUUID().toString(), user.getTel(), null);
+            // 处理自己的逻辑业务
+            // 此时我们想要获取 token中的用户信息，token经过拦截器拦截绝对是正确的
+            String token = request.getHeader("token");
 
-                    HashMap<String, Object> loginInfo = new HashMap<>();
-
-                    loginInfo.put("token", token);
-
-                    lawUser.setPassword(null);
-                    loginInfo.put("loginUser", lawUser);
-
-                    // 根据user状态和权限判断
-                    if (USEING.equals(lawUser.getStatus())) {
-                        responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGIN_SUCCESS.getCode()));
-                        responseWrapper.setMsg(ResultCodeEnum.LOGIN_SUCCESS.getName());
-                        responseWrapper.setData(loginInfo);
-
-                    } else {
-                        responseWrapper.setCode(String.valueOf(ResultCodeEnum.CANNOT_USE.getCode()));
-                        responseWrapper.setMsg(ResultCodeEnum.CANNOT_USE.getName());
-                    }
-
-                } else {
-                    log.error("账号密码错误");
-                    responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
-                    responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
-                }
-            } else {
-                log.error("用户名不存在");
-                responseWrapper.setMsg(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getName());
-                responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getCode()));
-            }
+            DecodedJWT tokenInfo = JwtUtil.getTokenInfo(token);
+            User user = new User();
+            user.setUserId(Integer.parseInt(tokenInfo.getClaim("userId").asString()));
+            user.setUserName(tokenInfo.getClaim("userName").asString());
+            // 返回用户的相关信息的map集合
+            responseWrapper.setData(user);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
         } catch (Exception e) {
-            log.error("用户登陆失败：{}", ExceptionUtils.getStackTrace(e));
+            log.error("检验秘钥：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
 
-            responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
-            responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
+        return responseWrapper;
+    }
+
+    @PostMapping(value = "/add")
+    public ResponseWrapper<Object> add(@RequestBody User user) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            String userName = user.getUserName();
+            String password = user.getPassword();
+
+            // 检查用户名和密码是否为空
+            if (userName == null || userName.isEmpty() || password == null || password.isEmpty()) {
+                responseWrapper.setMsg("用户名或密码不能为空");
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
+            }
+            User lawUser = userService.selectUserByName(userName.toString());
+            if (lawUser != null) {
+                responseWrapper.setMsg("用户名已存在");
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
+            }
+
+            user.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+
+            int result = userService.addUser(user);
+
+            if (result > 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+                responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+            } else {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            }
+
+        } catch (Exception e) {
+            log.error("用户添加失败：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
         }
         return responseWrapper;
     }
+
+    @PostMapping(value = "/insertDevice")
+    public ResponseWrapper<Object> insertDevice(@RequestBody UserDevice userDevice) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            User user = getCurrentUser();
+            String equipId = userDevice.getEquipId();
+            String type = userDevice.getDeviceType();
+
+            if (equipId == null || equipId.isEmpty()) {
+                responseWrapper.setMsg("设备Id不能为空");
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
+            }
+
+            if (type == null || type.isEmpty()) {
+                responseWrapper.setMsg("设备类型不能为空");
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                return responseWrapper;
+            }
+            UserDevice device = new UserDevice();
+
+            device.setUserId(user.getUserId().toString());
+            device.setEquipId(equipId);
+            device.setDeviceType(type);
+
+            int result = userDeviceService.insert(device);
+
+            if (result > 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+                responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+            } else {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            }
+
+        } catch (Exception e) {
+            log.error("设备添加失败：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+    }
+
+    @GetMapping(value = "/searchDevice")
+    public ResponseWrapper<Object> searchDevice() {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            User user = getCurrentUser();
+
+            List<UserDevice> userDevices = userDeviceService.selectByUserId(user.getUserId());
+
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+            responseWrapper.setData(userDevices);
+        } catch (Exception e) {
+            log.error("用户添加失败：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+    }
+
+    /**
+     * 获取当前登录的用户信息
+     *
+     * @return user对象
+     */
+    public User getCurrentUser() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String token = request.getHeader("token");
+            if (StrUtil.isNotBlank(token)) {
+                DecodedJWT tokenInfo = JwtUtil.getTokenInfo(token);
+
+                Integer userId = Integer.parseInt(tokenInfo.getClaim("userId").asString());
+                return userService.selectUserByUserId(userId);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+//    @PostMapping(value = "/appLogin")
+//    public ResponseWrapper<Object> appLogin(@RequestBody User user) {
+//        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+//        try {
+//            User lawUser = userService.getUserByLoginTel(user.getTel());
+//            if (lawUser != null) {
+//                //rsa解密
+//                String decryptPassword = RsaUtils.decryptByPrivateKey(RsaProperties.rsaPrivateKey, lawUser.getPassword());
+//                if (decryptPassword.equals(user.getPassword())) {
+//                    //密码正确
+//                    //由于手机号唯一,直接拿手机号进行jwt编码
+//                    String token = JwtUtil.createJWT(UUID.randomUUID().toString(), user.getTel(), null);
+//
+//                    HashMap<String, Object> loginInfo = new HashMap<>();
+//
+//                    loginInfo.put("token", token);
+//
+//                    lawUser.setPassword(null);
+//                    loginInfo.put("loginUser", lawUser);
+//
+//                    // 根据user状态和权限判断
+//                    if (USEING.equals(lawUser.getStatus())) {
+//                        responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGIN_SUCCESS.getCode()));
+//                        responseWrapper.setMsg(ResultCodeEnum.LOGIN_SUCCESS.getName());
+//                        responseWrapper.setData(loginInfo);
+//
+//                    } else {
+//                        responseWrapper.setCode(String.valueOf(ResultCodeEnum.CANNOT_USE.getCode()));
+//                        responseWrapper.setMsg(ResultCodeEnum.CANNOT_USE.getName());
+//                    }
+//
+//                } else {
+//                    log.error("账号密码错误");
+//                    responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
+//                    responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
+//                }
+//            } else {
+//                log.error("用户名不存在");
+//                responseWrapper.setMsg(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getName());
+//                responseWrapper.setCode(String.valueOf(ResultCodeEnum.LOGINNAME_NOT_EXIT_ERROR.getCode()));
+//            }
+//        } catch (Exception e) {
+//            log.error("用户登陆失败：{}", ExceptionUtils.getStackTrace(e));
+//
+//            responseWrapper.setMsg(ResultCodeEnum.PASSWORD_ERROR.getName());
+//            responseWrapper.setCode(String.valueOf(ResultCodeEnum.PASSWORD_ERROR.getCode()));
+//        }
+//        return responseWrapper;
+//    }
 
     private void copyUser(User lawUser, HttpServletRequest request) {
         UserInfo userInfo = new UserInfo();
@@ -172,43 +312,6 @@ public class UserController {
         request.getSession().setAttribute(StaticBasicInfo.LOGIN_USER, userInfo);
     }
 
-
-    /**
-     * @Description: 添加用户
-     * @param: [user]
-     * @return: com.boot.dandelion.health.care.common.wrapper.ResponseWrapper<java.lang.String>
-     * @author: shr
-     * @date: 2022/7/14
-     */
-    @PostMapping("/add")
-    public ResponseWrapper<Object> add(@RequestBody User user) {
-        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
-        try {
-            if (ValidatorUtils.checkMobileFormat(user.getTel())) {
-                if (userService.getUserByLoginTel(user.getTel()) == null) {
-                    //公钥加密，数据库存放的是加密后的密码
-                    String encryPassword = RsaUtils.encryptByPublicKey(RsaProperties.rsaPublicKey, user.getPassword());
-                    user.setPassword(encryPassword);
-                    userService.addUser(user);
-                    responseWrapper.setMsg("用户添加成功");
-                    responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
-                } else {
-                    log.error("手机号已存在：{}", user.getTel());
-                    responseWrapper.setMsg(ResultCodeEnum.PHONE_REPEAT_ERROR.getName());
-                    responseWrapper.setCode(String.valueOf(ResultCodeEnum.PHONE_REPEAT_ERROR.getCode()));
-                }
-            } else {
-                log.error("手机号格式不正确：{}", user.getTel());
-                responseWrapper.setMsg(ResultCodeEnum.PHONE_FORMAT_ERROR.getName());
-                responseWrapper.setCode(String.valueOf(ResultCodeEnum.PHONE_FORMAT_ERROR.getCode()));
-            }
-        } catch (Exception e) {
-            log.error("用户注册失败：{}", ExceptionUtils.getStackTrace(e));
-            responseWrapper.setMsg(ResultCodeEnum.ERROR.getName());
-            responseWrapper.setCode(String.valueOf(ResultCodeEnum.ERROR.getCode()));
-        }
-        return responseWrapper;
-    }
 
     /**
      * @Description: 删除用户
@@ -473,7 +576,7 @@ public class UserController {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
             String tel = user.getTel();
-            String name = user.getName();
+            String name = user.getUserName();
             String dept = user.getDept();
             boolean telNotEmpty = StringUtils.isNotEmpty(tel);
             boolean telNotBlank = StringUtils.isNotBlank(tel);
@@ -487,7 +590,7 @@ public class UserController {
             if (Flag3 && Flag2 && Flag1) {
                 User userByLoginTel = userService.getUserByLoginTel(tel);
                 if (userByLoginTel != null) {
-                    String name1 = userByLoginTel.getName();
+                    String name1 = userByLoginTel.getUserName();
                     String dept1 = userByLoginTel.getDept();
                     if (name1.equals(name)) {
                         if (dept1.equals(dept)) {

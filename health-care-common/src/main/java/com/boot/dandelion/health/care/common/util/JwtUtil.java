@@ -1,76 +1,90 @@
 package com.boot.dandelion.health.care.common.util;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * JWT工具类
  */
 public class JwtUtil {
 
-    //有效期为
-    public static final Long JWT_TTL = 60 * 60 *100000L;// 60 * 60 *1000  一个小时
-    //设置秘钥明文
-    public static final String JWT_KEY = "sangeng";
+
+    private static final String SECRET = "!Q@W#E$R^Y&U";
+    //token签发者
+    private static final String ISSUSRE = "HZSTYGZPT";
+    //token过期时间
+    public static final Long EXPIRE_DATE = 1000*60L;
 
     /**
-     * 创建token
-     * @param id
-     * @param subject
-     * @param ttlMillis
+     *  生成token
+     * @param map
      * @return
      */
-    public static String createJWT(String id, String subject, Long ttlMillis) {
+    public static String createToken(Map<String,String> map){
+        //创建过期时间
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.HOUR,1);  //一个小时过期
 
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-        long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
-        if(ttlMillis==null){
-            ttlMillis=JwtUtil.JWT_TTL;
-        }
-        long expMillis = nowMillis + ttlMillis;
-        Date expDate = new Date(expMillis);
-        SecretKey secretKey = generalKey();
-
-        JwtBuilder builder = Jwts.builder()
-                .setId(id)              //唯一的ID
-                .setSubject(subject)   // 主题  可以是JSON数据
-                .setIssuer("sg")     // 签发者
-                .setIssuedAt(now)      // 签发时间
-                .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
-                .setExpiration(expDate);// 设置过期时间
-        return builder.compact();
+        //创建builder对象
+        JWTCreator.Builder builder = JWT.create();
+        //遍历map
+        map.forEach((k,v)->{
+            builder.withClaim(k,v);
+        });
+        String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(SECRET));
+        return token;
     }
 
     /**
-     * 生成加密后的秘钥 secretKey
-     * @return
+     *  验证token
+     *  验证过程中如果有异常，则抛出；
+     *  如果没有,则返回 DecodedJWT 对象来获取用户信息;
+     * @param token
      */
-    public static SecretKey generalKey() {
-        byte[] encodedKey = Base64.getDecoder().decode(JwtUtil.JWT_KEY);
-        SecretKey key = new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
-        return key;
-    }
-    
+//    public static JsonResult verifyToken(String token, String username){
+//        Algorithm algorithm = Algorithm.HMAC256(SECRET);
+//        try {
+//            JWTVerifier jwtVerifier = JWT.require(algorithm).withClaim("username", username).build();
+//            jwtVerifier.verify(token);
+//            return new JsonResult();
+//        }catch (SignatureVerificationException e) {
+//            //验证的签名不一致
+//            throw new SignatureVerificationException(algorithm);
+//        }catch (TokenExpiredException e){
+//            throw new TokenExpiredException("token is alreadey expired");
+//        }catch (AlgorithmMismatchException e){
+//            throw new AlgorithmMismatchException("签名算法不匹配");
+//        }catch (InvalidClaimException e){
+//            throw new InvalidClaimException("校验的claims内容不匹配");
+//        }catch (Exception e){
+//            e.printStackTrace();
+//        }
+//        return new JsonResult().error("用户和jwt-token校验失败");
+//    }
+
     /**
-     * 解析
-     *
-     * @param jwt
-     * @return
-     * @throws Exception
+     *  验证token
+     *  验证过程中如果有异常，则抛出；
+     *  如果没有,则返回 DecodedJWT 对象来获取用户信息;
+     * @param token
      */
-    public static Claims parseJWT(String jwt) throws Exception {
-        SecretKey secretKey = generalKey();
-        return Jwts.parser()
-                .setSigningKey(secretKey)
-                .parseClaimsJws(jwt)
-                .getBody();
+    public static DecodedJWT verify(String token){
+        return JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
+    }
+
+    /**
+     * 解析token中的内容,先验证token合法性饭后返回token解码的对象
+     */
+    public static DecodedJWT getTokenInfo(String token){
+        DecodedJWT verify =JWT.require(Algorithm.HMAC256(SECRET)).build().verify(token);
+        // 使用JWT的require，生成一个验证对象
+        return verify;
     }
 
 

@@ -20,7 +20,7 @@ public class MattressAlarmSch {
     private final String MATTRESSID = "B00681";
     private final String COMMAND = "g2";
 
-    @Scheduled(cron = "0 10 17 * * ?")
+//    @Scheduled(cron = "0 10 17 * * ?")
     public void fetchDataAndSaveToDatabase() {
         try {
             LocalDate startDate = LocalDate.parse("2023-12-08");

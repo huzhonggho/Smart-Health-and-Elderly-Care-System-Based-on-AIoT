@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.WatchStepsMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.WatchSteps">
+        <result column="stepId" jdbcType="INTEGER" property="stepId"/>
+        <result column="watchId" jdbcType="VARCHAR" property="watchId"/>
+        <result column="date" jdbcType="VARCHAR" property="date"/>
+        <result column="hour" jdbcType="VARCHAR" property="hour"/>
+        <result column="steps" jdbcType="VARCHAR" property="steps"/>
+        <result column="distance" jdbcType="VARCHAR" property="distance"/>
+        <result column="calories" jdbcType="VARCHAR" property="calories"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        stepId,watchId,date,hour,steps,distance,calories
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.WatchSteps">
+        insert into watch_steps (watchId,date,hour,steps,distance,calories)
+        values (
+                   #{watchId,jdbcType=VARCHAR},
+                   #{date,jdbcType=VARCHAR},
+                   #{hour,jdbcType=VARCHAR},
+                   #{steps,jdbcType=VARCHAR},
+                   #{distance,jdbcType=VARCHAR},
+                   #{calories,jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <update id="update" parameterType="com.boot.dandelion.health.care.dao.entity.WatchSteps">
+        update watch_steps
+        set hour = #{hour,jdbcType=VARCHAR},
+            steps = #{steps,jdbcType=VARCHAR},
+            distance = #{distance,jdbcType=VARCHAR},
+            calories = #{calories,jdbcType=VARCHAR}
+        where watchId = #{watchId,jdbcType=VARCHAR}
+          and date = #{date,jdbcType=VARCHAR}
+    </update>
+
+    <update id="updateByHour" parameterType="com.boot.dandelion.health.care.dao.entity.WatchSteps">
+        update watch_steps
+        set hour = #{hour,jdbcType=VARCHAR},
+            steps = #{steps,jdbcType=VARCHAR},
+            distance = #{distance,jdbcType=VARCHAR},
+            calories = #{calories,jdbcType=VARCHAR}
+        where watchId = #{watchId,jdbcType=VARCHAR}
+          and date = #{date,jdbcType=VARCHAR}
+          and hour = #{hour,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteByDateAndWatchId" parameterType="map">
+        delete from watch_steps
+        where watchId = #{watchId,jdbcType=VARCHAR}
+          and date = #{date,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="selectByDateAndWatchId" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM watch_steps
+        WHERE watchId = #{watchId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        order by hour asc
+    </select>
+</mapper>

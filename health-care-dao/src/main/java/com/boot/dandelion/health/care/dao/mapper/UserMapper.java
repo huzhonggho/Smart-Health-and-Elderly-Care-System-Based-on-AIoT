@@ -6,9 +6,11 @@ import com.boot.dandelion.health.care.dao.entity.User;
 import java.util.List;
 
 public interface UserMapper {
-    int deleteByPrimaryKey(Integer uid);
+    int insert(User user);
 
-    int insert(User record);
+    User selectUserByName(String userName);
+    User selectUserByUserId(Integer userId);
+    int deleteByPrimaryKey(Integer uid);
 
     User selectByPrimaryKey(Integer uid);
 

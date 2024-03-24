@@ -1,11 +1,15 @@
 package com.boot.dandelion.health.care.dao.entity;
 
 import com.boot.dandelion.health.care.common.entity.UserInfo;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
-    private Integer uid;
+    private Integer userId;
 
     private String tel;
 
@@ -16,14 +20,11 @@ public class User {
 
     private String dept;
 
-    private String name;
+    private String userName;
 
     private String status;
 
-    private Integer gender;
+    private String gender;
 
-    private Integer authority;
-    public User(){
-        new UserInfo();
-    }
+    private String authority;
 }

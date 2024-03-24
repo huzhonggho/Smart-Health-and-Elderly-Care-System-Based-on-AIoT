@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
-public class OutBedServiceImpl implements MattressOutBedService {
+public class MattressOutBedServiceImpl implements MattressOutBedService {
 
     @Resource
     private MattressOutBedMapper mapper;

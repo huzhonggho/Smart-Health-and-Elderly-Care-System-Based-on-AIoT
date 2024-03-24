@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!--namespace = 所需实现的接口全限定名-->
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.UserDeviceMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.UserDevice">
+        <result column="deviceId" jdbcType="INTEGER" property="deviceId"/>
+        <result column="userId" jdbcType="VARCHAR" property="userId"/>
+        <result column="deviceName" jdbcType="VARCHAR" property="deviceName"/>
+        <result column="equipId" jdbcType="VARCHAR" property="equipId"/>
+        <result column="deviceType" jdbcType="VARCHAR" property="deviceType"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        deviceId,userId,deviceName,equipId,deviceType
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.UserDevice">
+        insert into user_device ( userId, deviceName,equipId, deviceType)
+        values (#{userId,jdbcType=VARCHAR},
+                #{deviceName,jdbcType=VARCHAR},#{equipId,jdbcType=VARCHAR}, #{deviceType,jdbcType=VARCHAR})
+    </insert>
+    <select id="selectByUserId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM user_device
+        WHERE userId = #{userId, jdbcType=VARCHAR}
+
+    </select>
+
+</mapper>

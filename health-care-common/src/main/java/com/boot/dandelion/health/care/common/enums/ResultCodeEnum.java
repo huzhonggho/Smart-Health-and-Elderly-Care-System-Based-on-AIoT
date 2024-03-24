@@ -15,6 +15,7 @@ public enum ResultCodeEnum {
 
     ADD_SUCCESS("添加成功",200),
     FAIL("失败",400),
+    TOKEN_FAIL("token失败",401),
 
     ADD_FAIL("添加失败",506),
 

@@ -7,11 +7,23 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MattressTurnBody {
-    private Integer turnId;
-    private String mattressId;
+public class WatchSteps {
+
+    private Integer stepId;
+
+    private String watchId;
+
     private String date;
-    private String dataTime;
-    private String dataValue;
-    private String duration;
+
+    private String hour;
+
+    private String steps;
+
+    private String distance;
+
+    private String calories;
+
+
+
+
 }

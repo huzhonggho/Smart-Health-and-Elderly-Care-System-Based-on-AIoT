@@ -34,7 +34,6 @@ import java.net.UnknownHostException;
 //开启swagger
 @EnableSwagger2
 @EnableOpenApi
-@EnableJpaRepositories(basePackages = "com.boot.dandelion.health.care.core.repository")
 
 public class Application {
 

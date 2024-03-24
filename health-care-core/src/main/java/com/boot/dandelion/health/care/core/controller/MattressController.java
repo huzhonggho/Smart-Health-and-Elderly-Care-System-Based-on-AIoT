@@ -4,6 +4,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
+import com.boot.dandelion.health.care.common.entity.HRAndRR;
 import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
 import com.boot.dandelion.health.care.core.service.*;
@@ -47,6 +48,7 @@ public class MattressController {
     private MattressAlarmService mattressAlarmService;
     @Resource
     private MattressTurnBodyService mattressTurnBodyService;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ApiOperation("分页和模糊查询")
     @GetMapping(value = "/history/{page}/{size}")
@@ -93,6 +95,86 @@ public class MattressController {
             responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
         } catch (Exception e) {
             log.error("分页和模糊查询失败：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+    }
+
+    @ApiOperation("获取呼吸心率记录")
+    @GetMapping(value = "/HRandRR")
+    public ResponseWrapper<Object> getThreeRecord(@RequestParam String mattressId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (mattressId == null || mattressId.equals("")) {
+                responseWrapper.setMsg("MattressId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
+            // 获取当前时间
+            LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
+            // 获取昨天的当前时间
+            LocalDateTime yesterday = currentTime.minusDays(1);
+
+            Map<String, Object> todayParams = new HashMap<>();
+            todayParams.put("mattressId", mattressId);
+            todayParams.put("date", date);
+            List<MattressHistory> todayList = mattressHisService.selectByDateAndMattressId(todayParams);
+
+            Map<String, Object> yesParams = new HashMap<>();
+            yesParams.put("mattressId", mattressId);
+            yesParams.put("date", LocalDate.parse(date).minusDays(1).toString());
+            List<MattressHistory> yesList = mattressHisService.selectByDateAndMattressId(yesParams);
+
+            // 获取昨天早上八点的时间
+            LocalDateTime yesterdayEightAM = LocalDateTime.of(yesterday.toLocalDate(), LocalTime.of(8, 0));
+
+            // 获取今天早上八点的时间
+            LocalDateTime todayEightAM = LocalDateTime.of(currentTime.toLocalDate(), LocalTime.of(8, 0));
+
+            List<MattressHistory> allList = new ArrayList<>(yesList);
+            allList.addAll(todayList);
+            // 定义日期时间格式化器
+            if (allList.size() == 0) {
+                responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+                responseWrapper.setMsg("该时段无数据");
+                return responseWrapper;
+            }
+
+            // 筛选昨天早上八点到今天早上八点的数据
+            List<MattressHistory> filteredList = allList.stream()
+                    .filter(history -> {
+                        LocalDateTime historyDateTime = LocalDateTime.parse(history.getDate() + " " + history.getDuration().split("-")[0], formatter);
+                        return historyDateTime.isAfter(yesterdayEightAM) && historyDateTime.isBefore(todayEightAM);
+                    })
+                    .collect(Collectors.toList());
+
+            List<HRAndRR> hrAndRRList = new ArrayList<>();
+            Iterator<MattressHistory> iterator = filteredList.iterator();
+            while (iterator.hasNext()) {
+                MattressHistory obj = iterator.next();
+                HRAndRR hrAndRR = new HRAndRR();
+
+                String[] time =obj.getDuration().split("-");
+
+                hrAndRR.setHR(String.valueOf(obj.getHR()));
+                hrAndRR.setRR(String.valueOf(obj.getRR()));
+                hrAndRR.setState(obj.getState());
+                hrAndRR.setStart(time[0]);
+                hrAndRR.setDate(obj.getDate());
+
+                hrAndRRList.add(hrAndRR);
+            }
+            responseWrapper.setData(hrAndRRList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (Exception e) {
+            log.error("获取呼吸心率记录：{}", ExceptionUtils.getStackTrace(e));
             responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
             responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
         }
@@ -147,7 +229,6 @@ public class MattressController {
                 responseWrapper.setMsg("date不能为空");
                 return responseWrapper;
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
             LocalDateTime yesterday = currentTime.minusDays(1);
@@ -219,7 +300,6 @@ public class MattressController {
                 responseWrapper.setMsg("date不能为空");
                 return responseWrapper;
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
             LocalDateTime yesterday = currentTime.minusDays(1);
@@ -290,7 +370,6 @@ public class MattressController {
                 responseWrapper.setMsg("date不能为空");
                 return responseWrapper;
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
             LocalDateTime yesterday = currentTime.minusDays(1);
@@ -359,7 +438,6 @@ public class MattressController {
                 responseWrapper.setMsg("date不能为空");
                 return responseWrapper;
             }
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);
             LocalDateTime yesterday = currentTime.minusDays(1);
@@ -428,7 +506,6 @@ public class MattressController {
             //designate template
 //        String templateFileName = System.getProperty("user.dir") + "/excelTemplate/mattressHis.xlsx";
             String templateFileName = "C:/wwwroot/health_care" + "/excelTemplate/mattressHis.xlsx";
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
             // 获取当前时间
             LocalDateTime currentTime = LocalDateTime.parse(date + " 08:00:00", formatter);

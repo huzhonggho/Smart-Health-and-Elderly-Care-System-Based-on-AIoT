@@ -37,15 +37,15 @@ public class UserUtils {
      * @param token
      * @return
      */
-    public static String getUserTel(String token){
-        Claims claims = null;
-        try {
-            claims = JwtUtil.parseJWT(token);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        String tel = claims.getSubject();
-        return tel;
-    }
+//    public static String getUserTel(String token){
+//        Claims claims = null;
+//        try {
+//            claims = JwtUtil.parseJWT(token);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        String tel = claims.getSubject();
+//        return tel;
+//    }
 
 }

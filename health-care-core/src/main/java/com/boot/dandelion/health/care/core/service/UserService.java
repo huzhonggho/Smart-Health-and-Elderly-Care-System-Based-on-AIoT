@@ -14,15 +14,6 @@ import java.util.List;
 public interface UserService {
 
     /**
-     * @Description: 通过登录手机号获取用户信息
-     * @param: [loginTel]
-     * @return: com.boot.dandelion.health.care.dao.entity.User
-     * @author: shr
-     * @date: 2022/7/14
-     */              
-    User getUserByLoginTel(String loginTel);
-
-    /**
      * @Description: 添加用户
      * @param: [user]
      * @return: int
@@ -30,6 +21,18 @@ public interface UserService {
      * @date: 2022/7/14
      */
     int addUser(User user);
+
+    User selectUserByName(String userName);
+    User selectUserByUserId(Integer userId);
+
+    /**
+     * @Description: 通过登录手机号获取用户信息
+     * @param: [loginTel]
+     * @return: com.boot.dandelion.health.care.dao.entity.User
+     * @author: shr
+     * @date: 2022/7/14
+     */
+    User getUserByLoginTel(String loginTel);
 
     /**
      * @Description: 删除用户
