@@ -12,5 +12,11 @@ public interface MattressHisService {
     List<MattressHistory> selectByDateAndMattressId(Map<String, Object> params);
 
     int selectCountByMattressIdAndDate(Map<String, Object> params);
+    List<MattressHistory> selectMaxHistoryIdByMattressIdAndDate(Map<String, Object> params);
+
+    int updateByHistoryId(MattressHistory mattressHistory);
+
+    List<MattressHistory> selectByMattressIdDateAndStart(Map<String, Object> params);
+    List<MattressHistory> selectByMattressIdDateStartAndEnd(Map<String, Object> params);
 
 }

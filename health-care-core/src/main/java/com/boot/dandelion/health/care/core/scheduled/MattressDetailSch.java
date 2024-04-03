@@ -1,15 +1,23 @@
 package com.boot.dandelion.health.care.core.scheduled;
 
-import com.boot.dandelion.health.care.common.util.CloudPlatformClientUtil;
+import com.boot.dandelion.health.care.common.util.AuthorizedUtils;
 import com.boot.dandelion.health.care.core.service.MattressDetailService;
 import com.boot.dandelion.health.care.dao.entity.MattressDetail;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -18,69 +26,103 @@ import java.time.format.DateTimeFormatter;
 public class MattressDetailSch {
     @Autowired
     private MattressDetailService service;
+    private static final String API_URL = "http://www.sdhtjr.com:5859/vms/getparam.asp";
     private final String MATTRESSID = "B00681";
-    private final String COMMAND = "ae";
+    private final String REGIONAL = "TestUnit";
 
-//    @Scheduled(cron = "0 10 20 * * ?")
+//    @Scheduled(fixedRate = 86400000) // 每天执行一次
     public void fetchDataAndSaveToDatabase() {
         try {
+            CloseableHttpClient httpClient = HttpClients.createDefault();
 
-            LocalDate startDate = LocalDate.parse("2023-12-07");
-            LocalDate endDate = LocalDate.parse("2023-12-17");
-            System.out.println("MattressDetailSch");
-            while (!startDate.isAfter(endDate)) {
-                // 使用工具类发送指令
+            // 构建参数字符串
+            String authorized = AuthorizedUtils.generateAuthorizationCode("report");
+            String startDate = getDate();
 
-                String command = "fa" + COMMAND + MATTRESSID + "|TestUnit|" + startDate + "|TestUser@T123456";
-                System.out.println(command);
-                String response = CloudPlatformClientUtil.sendCommand(command);
-                System.out.println(response);
-                // 处理返回数据
-                String responseData = CloudPlatformClientUtil.handleResponse(response);
+            System.out.println(startDate);
+
+            String encodedStartDate = URLEncoder.encode(startDate, StandardCharsets.UTF_8.toString());
+
+            // 构建完整的API URL
+            String fullUrl = API_URL + "?Authorized=" + authorized +
+                    "&Regional=" + REGIONAL +
+                    "&id=" + MATTRESSID +
+                    "&startDate=" + encodedStartDate;
+            // 发起HTTP GET请求
+            HttpGet httpGet = new HttpGet(fullUrl);
+            CloseableHttpResponse response = httpClient.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+
+
+            if (entity != null) {
+                String responseString = EntityUtils.toString(entity);
+                // 处理响应数据，可以根据需要解析JSON等操作
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode rootNode = objectMapper.readTree(responseData);
-                JsonNode firstElement = rootNode.get(0);
-                System.out.println(responseData);
-                if (firstElement.has("data")) {
-                    JsonNode dataNode = firstElement.get("data");
-                    MattressDetail info = new MattressDetail();
+                JsonNode rootNode = objectMapper.readTree(responseString);
 
-                    info.setDetailId(dataNode.path("detailId").asInt());
-                    info.setMattressId(MATTRESSID);
-                    info.setDate(startDate.toString());
-                    info.setAwake(dataNode.path("Awake").asText());
-                    info.setInSleep(dataNode.path("InSleep").asText());
-                    info.setShallowSleep(dataNode.path("ShallowSleep").asText());
-                    info.setDeepSleep(dataNode.path("DeepSleep").asText());
-                    info.setTotalSleep(dataNode.path("TotalSleep").asText());
-                    info.setNumberOfAlarms(dataNode.path("NumberOfAlarms").asText());
-                    info.setNumberOfFreeBeds(dataNode.path("NumberOfFreeBeds").asText());
-                    info.setRespirationAverage(dataNode.path("RespirationAverage").asText());
-                    info.setRespirationMax(dataNode.path("RespirationMax").asText());
-                    info.setRespirationMin(dataNode.path("RespirationMin").asText());
-                    info.setHeartRateAverage(dataNode.path("HeartRateAverage").asText());
-                    info.setHeartRateMax(dataNode.path("HeartRateMax").asText());
-                    info.setHeartRateMin(dataNode.path("HeartRateMin").asText());
-                    info.setGeneral(dataNode.path("General").asText());
-                    info.setHeartRespirationRatio(dataNode.path("HeartRespirationRatio").asText());
-                    info.setScores(dataNode.path("Scores").asText());
-                    service.insert(info);
-                    System.out.println(info);
+                JsonNode dataNode = null;
+                JsonNode innerDataNode = null;
+                System.out.println(responseString);
+                if (rootNode.has("data")) {
+                    dataNode = rootNode.get("data");
+                    System.out.println(dataNode);
+                    if (dataNode != null && dataNode.isArray()) {
+                        System.out.println(dataNode.get(0));
+                        innerDataNode = dataNode.get(0);
 
 
-                } else {
-                    // 如果没有data节点，处理错误或者其他情况
-                    System.err.println("Invalid response format: " + responseData);
-                    break;
+                        MattressDetail info = new MattressDetail();
+
+                        info.setDetailId(innerDataNode.path("detailId").asInt());
+                        info.setMattressId(MATTRESSID);
+                        info.setDate(startDate.toString());
+                        info.setAwake(innerDataNode.path("Awake").asText());
+                        info.setInSleep(innerDataNode.path("InSleep").asText());
+                        info.setShallowSleep(innerDataNode.path("ShallowSleep").asText());
+                        info.setDeepSleep(innerDataNode.path("DeepSleep").asText());
+                        info.setTotalSleep(innerDataNode.path("TotalSleep").asText());
+                        info.setNumberOfAlarms(innerDataNode.path("NumberOfAlarms").asText());
+                        info.setNumberOfFreeBeds(innerDataNode.path("NumberOfFreeBeds").asText());
+                        info.setRespirationAverage(innerDataNode.path("RespirationAverage").asText());
+                        info.setRespirationMax(innerDataNode.path("RespirationMax").asText());
+                        info.setRespirationMin(innerDataNode.path("RespirationMin").asText());
+                        info.setHeartRateAverage(innerDataNode.path("HeartRateAverage").asText());
+                        info.setHeartRateMax(innerDataNode.path("HeartRateMax").asText());
+                        info.setHeartRateMin(innerDataNode.path("HeartRateMin").asText());
+                        info.setGeneral(innerDataNode.path("General").asText());
+                        info.setHeartRespirationRatio(innerDataNode.path("HeartRespirationRatio").asText());
+                        info.setScores(innerDataNode.path("Scores").asText());
+                        service.insert(info);
+
+
+                    }
                 }
-                startDate = startDate.plusDays(1);
-            }
-            System.out.println("end");
 
-        } catch (Exception e) {
-            System.err.println("Error fetching or saving data: " + e.getMessage());
+
+            }
+
+
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
+    private String getDate() {
+        LocalDateTime currentDate = LocalDateTime.now().minusHours(1);
+
+        // 自定义日期格式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        // 格式化当前日期为字符串
+        String formattedDate = currentDate.format(formatter);
+
+        return formattedDate;
+    }
 }

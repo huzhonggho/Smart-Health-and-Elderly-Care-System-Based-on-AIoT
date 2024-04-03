@@ -13,20 +13,26 @@
         <result column="date" jdbcType="VARCHAR" property="date"/>
         <result column="alam" jdbcType="VARCHAR" property="alam"/>
         <result column="duration" jdbcType="VARCHAR" property="duration"/>
+        <result column="start" jdbcType="VARCHAR" property="start"/>
+        <result column="end" jdbcType="VARCHAR" property="end"/>
     </resultMap>
 
     <sql id="BaseColumnList">
-        historyId, RR, HR, wet, state, turn, date,alam,mattressId,duration
+        historyId
+        , RR, HR, wet, state, turn, date,alam,mattressId,duration,start,
+        end
     </sql>
 
     <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.MattressHistory">
-        insert into mattress_history (RR, HR, wet, state, turn, date,alam,mattressId,duration)
+        insert into mattress_history (RR, HR, wet, state, turn, date, alam, mattressId, duration,start,end)
         values (#{RR,jdbcType=INTEGER}, #{HR,jdbcType=INTEGER}, #{wet,jdbcType=VARCHAR},
-                #{state,jdbcType=VARCHAR}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR}, #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR})
+                #{state,jdbcType=VARCHAR}, #{turn,jdbcType=VARCHAR}, #{date,jdbcType=VARCHAR}, #{alam,jdbcType=VARCHAR},
+                #{mattressId,jdbcType=VARCHAR}, #{duration,jdbcType=VARCHAR}, #{start,jdbcType=VARCHAR}, #{end,jdbcType=VARCHAR})
     </insert>
 
     <select id="selectByPageAndSearch" resultMap="BaseResultMap" parameterType="map">
-        SELECT <include refid="BaseColumnList"/>
+        SELECT
+        <include refid="BaseColumnList"/>
         FROM mattress_history
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
@@ -54,10 +60,56 @@
     </select>
 
     <select id="selectByDateAndMattressId" resultMap="BaseResultMap" parameterType="map">
-        SELECT <include refid="BaseColumnList"/>
+        SELECT
+        <include refid="BaseColumnList"/>
         FROM mattress_history
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date,jdbcType=VARCHAR}
     </select>
+
+    <select id="selectMaxHistoryIdByMattressIdAndDate" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY historyId DESC
+        LIMIT 1
+    </select>
+
+    <update id="updateByHistoryId" parameterType="com.boot.dandelion.health.care.dao.entity.MattressHistory">
+        UPDATE mattress_history
+        SET RR       = #{RR,jdbcType=INTEGER},
+            HR       = #{HR,jdbcType=INTEGER},
+            wet      = #{wet,jdbcType=VARCHAR},
+            state    = #{state,jdbcType=VARCHAR},
+            turn     = #{turn,jdbcType=VARCHAR},
+            date     = #{date,jdbcType=VARCHAR},
+            alam     = #{alam,jdbcType=VARCHAR},
+            duration = #{duration,jdbcType=VARCHAR},
+            start = #{start,jdbcType=VARCHAR},
+            end = #{end,jdbcType=VARCHAR}
+        WHERE historyId = #{historyId,jdbcType=INTEGER}
+    </update>
+
+    <select id="selectByMattressIdDateAndStart" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        AND start = #{start, jdbcType=VARCHAR}
+    </select>
+    <select id="selectByMattressIdDateStartAndEnd" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_history
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        AND start = #{start, jdbcType=VARCHAR}
+        AND end = #{end, jdbcType=VARCHAR}
+    </select>
+
+
 
 </mapper>

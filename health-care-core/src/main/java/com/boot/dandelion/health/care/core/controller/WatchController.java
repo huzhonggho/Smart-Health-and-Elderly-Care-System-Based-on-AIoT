@@ -2,8 +2,10 @@ package com.boot.dandelion.health.care.core.controller;
 
 import com.boot.dandelion.health.care.common.enums.ResultCodeEnum;
 import com.boot.dandelion.health.care.common.wrapper.ResponseWrapper;
+import com.boot.dandelion.health.care.core.service.WatchLocationService;
 import com.boot.dandelion.health.care.core.service.WatchStepsService;
 import com.boot.dandelion.health.care.dao.entity.MattressDetail;
+import com.boot.dandelion.health.care.dao.entity.WatchLocation;
 import com.boot.dandelion.health.care.dao.entity.WatchSteps;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -30,10 +32,11 @@ public class WatchController {
 
     @Resource
     private WatchStepsService watchStepsService;
-
+    @Resource
+    private WatchLocationService watchLocationService;
     @ApiOperation("查询手表步数")
     @GetMapping(value = "/steps")
-    public ResponseWrapper<Object> getSreps(@RequestParam String watchId, @RequestParam String date) {
+    public ResponseWrapper<Object> getSteps(@RequestParam String watchId, @RequestParam String date) {
         ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
         try {
             // Validate input parameters
@@ -64,6 +67,37 @@ public class WatchController {
 
     }
 
+    @ApiOperation("查询手表位置")
+    @GetMapping(value = "/location")
+    public ResponseWrapper<Object> getLocation(@RequestParam String watchId, @RequestParam String date) {
+        ResponseWrapper<Object> responseWrapper = new ResponseWrapper<>();
+        try {
+            // Validate input parameters
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            if (watchId == null || watchId.equals("")) {
+                responseWrapper.setMsg("watchId不能为空");
+                return responseWrapper;
+            }
+            if (date == null || date.equals("")) {
+                responseWrapper.setMsg("date不能为空");
+                return responseWrapper;
+            }
 
+            Map<String, Object> params = new HashMap<>();
+            params.put("watchId", watchId);
+            params.put("date", date);
+            List<WatchLocation> watchStepsList = watchLocationService.selectByDateAndWatchId(params);
+            responseWrapper.setData(watchStepsList);
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.SUCCESS.getCode()));
+            responseWrapper.setMsg(ResultCodeEnum.SUCCESS.getName());
+        } catch (
+                Exception e) {
+            log.error("查询手表位置：{}", ExceptionUtils.getStackTrace(e));
+            responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+        }
+        return responseWrapper;
+
+    }
 
 }

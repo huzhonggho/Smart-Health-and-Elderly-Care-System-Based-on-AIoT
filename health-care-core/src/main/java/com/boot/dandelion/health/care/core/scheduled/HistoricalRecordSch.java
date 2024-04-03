@@ -12,15 +12,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 
@@ -32,7 +33,7 @@ public class HistoricalRecordSch {
     private final String MATTRESSID = "B00681";
     private final String REGIONAL = "TestUnit";
 
-    @Scheduled(cron = "1 0 * * * *") // 每小时执行一次                这段代码的意义
+//    @Scheduled(fixedRate = 3600000) // 每小时执行一次
     public void callAPIAndProcessResponse() {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -41,9 +42,16 @@ public class HistoricalRecordSch {
             String authorized = AuthorizedUtils.generateAuthorizationCode("history");
             String startDate = getPreviousWholeHour();
 
-//            String startDate = "2024-03-24 09:00:00";
             System.out.println(startDate);
+
             int page = 1;
+
+            System.out.println(getDate());
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("mattressId", MATTRESSID);
+            params.put("date", getDate());
+
             while (true) {
                 String encodedStartDate = URLEncoder.encode(startDate, StandardCharsets.UTF_8.toString());
 
@@ -53,15 +61,14 @@ public class HistoricalRecordSch {
                         "&id=" + MATTRESSID +
                         "&startDate=" + encodedStartDate +
                         "&page=" + page;
-
                 // 发起HTTP GET请求
                 HttpGet httpGet = new HttpGet(fullUrl);
                 CloseableHttpResponse response = httpClient.execute(httpGet);
                 HttpEntity entity = response.getEntity();
 
+
                 if (entity != null) {
                     String responseString = EntityUtils.toString(entity);
-                    System.out.println("API Response: " + responseString);
                     // 处理响应数据，可以根据需要解析JSON等操作
 
                     ObjectMapper objectMapper = new ObjectMapper();
@@ -77,7 +84,10 @@ public class HistoricalRecordSch {
                                 innerDataNode = pageNode.get("data");
                                 if (innerDataNode != null && innerDataNode.isArray() && innerDataNode.size() > 0) {
                                     for (JsonNode itemNode : innerDataNode) {
+
                                         MattressHistory mattressHistory = new MattressHistory();
+                                        String[] time = itemNode.path("date").asText().split("-");
+
 
                                         mattressHistory.setRR(itemNode.path("RR").asInt());
                                         mattressHistory.setHR(itemNode.path("HR").asInt());
@@ -88,7 +98,26 @@ public class HistoricalRecordSch {
                                         mattressHistory.setAlam(itemNode.path("alam").asText());
                                         mattressHistory.setMattressId(MATTRESSID);
                                         mattressHistory.setDuration(itemNode.path("date").asText());
-                                        mattressHistoryService.insert(mattressHistory);
+                                        mattressHistory.setStart(time[0]);
+                                        mattressHistory.setEnd(time[1]);
+
+                                        params.put("start", time[0]);
+                                        params.put("end", time[1]);
+                                        List<MattressHistory> startEndList = mattressHistoryService.selectByMattressIdDateStartAndEnd(params);
+                                        List<MattressHistory> startList = mattressHistoryService.selectByMattressIdDateAndStart(params);
+
+                                        //为了更新end节点增加的情况，
+                                        if (startEndList.size() == 0) {
+                                            if (startList.size() > 0) {
+                                                MattressHistory lastMattress = startList.get(0);
+                                                mattressHistory.setHistoryId(lastMattress.getHistoryId());
+                                                mattressHistoryService.updateByHistoryId(mattressHistory);
+                                            } else {
+                                                mattressHistoryService.insert(mattressHistory);
+
+                                            }
+                                        }
+
                                     }
                                 }
                             }
@@ -124,15 +153,17 @@ public class HistoricalRecordSch {
 
         // 将分钟和秒数设置为零，保留小时和日期部分
         LocalDateTime zeroMinuteSecondTime = currentTime.minusMinutes(currentMinute).minusSeconds(currentSecond).minusNanos(currentNano);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         // 减去一个小时
         LocalDateTime prevHourTime = zeroMinuteSecondTime.minusHours(1);
+        String formattedDate = prevHourTime.format(formatter);
 
-        return String.valueOf(prevHourTime);
+        return formattedDate;
     }
 
     private String getDate() {
-        LocalDate currentDate = LocalDate.now();
+        LocalDateTime currentDate = LocalDateTime.now().minusHours(1);
 
         // 自定义日期格式
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

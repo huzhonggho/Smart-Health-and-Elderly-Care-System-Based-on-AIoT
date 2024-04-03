@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.WatchLocationMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.WatchLocation">
+        <result column="locationId" jdbcType="INTEGER" property="locationId"/>
+        <result column="deviceName" jdbcType="VARCHAR" property="deviceName"/>
+        <result column="latitude" jdbcType="VARCHAR" property="latitude"/>
+        <result column="longitude" jdbcType="VARCHAR" property="longitude"/>
+        <result column="oLat" jdbcType="VARCHAR" property="oLat"/>
+        <result column="oLng" jdbcType="VARCHAR" property="oLng"/>
+        <result column="showSpeed" jdbcType="VARCHAR" property="showSpeed"/>
+        <result column="speed" jdbcType="VARCHAR" property="speed"/>
+        <result column="course" jdbcType="VARCHAR" property="course"/>
+        <result column="isStop" jdbcType="VARCHAR" property="isStop"/>
+        <result column="acc" jdbcType="VARCHAR" property="acc"/>
+        <result column="status" jdbcType="VARCHAR" property="status"/>
+        <result column="deviceUtcDate" jdbcType="VARCHAR" property="deviceUtcDate"/>
+        <result column="lastCommunication" jdbcType="VARCHAR" property="lastCommunication"/>
+        <result column="showDataType" jdbcType="VARCHAR" property="showDataType"/>
+        <result column="dataType" jdbcType="VARCHAR" property="dataType"/>
+        <result column="showBattery" jdbcType="VARCHAR" property="showBattery"/>
+        <result column="battery" jdbcType="VARCHAR" property="battery"/>
+        <result column="icon" jdbcType="VARCHAR" property="icon"/>
+        <result column="distance" jdbcType="VARCHAR" property="distance"/>
+        <result column="watchId" jdbcType="VARCHAR" property="watchId"/>
+        <result column="deviceId" jdbcType="VARCHAR" property="deviceId"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        locationId, deviceName, latitude, longitude, oLat, oLng, showSpeed, speed, course, isStop, acc, status, deviceUtcDate, lastCommunication, showDataType, dataType, showBattery, battery, icon, distance,
+        watchId, deviceId <!-- Include new properties in the BaseColumnList -->
+    </sql>
+
+    <!-- Add your SQL statements here -->
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.WatchLocation">
+        insert into watch_location (deviceName, latitude, longitude, oLat, oLng, showSpeed, speed, course, isStop, acc, status, deviceUtcDate, lastCommunication, showDataType, dataType, showBattery, battery, icon, distance, watchId, deviceId)
+        values (
+                   #{deviceName, jdbcType=VARCHAR},
+                   #{latitude, jdbcType=VARCHAR},
+                   #{longitude, jdbcType=VARCHAR},
+                   #{oLat, jdbcType=VARCHAR},
+                   #{oLng, jdbcType=VARCHAR},
+                   #{showSpeed, jdbcType=VARCHAR},
+                   #{speed, jdbcType=VARCHAR},
+                   #{course, jdbcType=VARCHAR},
+                   #{isStop, jdbcType=VARCHAR},
+                   #{acc, jdbcType=VARCHAR},
+                   #{status, jdbcType=VARCHAR},
+                   #{deviceUtcDate, jdbcType=VARCHAR},
+                   #{lastCommunication, jdbcType=VARCHAR},
+                   #{showDataType, jdbcType=VARCHAR},
+                   #{dataType, jdbcType=VARCHAR},
+                   #{showBattery, jdbcType=VARCHAR},
+                   #{battery, jdbcType=VARCHAR},
+                   #{icon, jdbcType=VARCHAR},
+                   #{distance, jdbcType=VARCHAR},
+                   #{watchId, jdbcType=VARCHAR},
+                   #{deviceId, jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <select id="selectByDateAndWatchId" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM watch_location
+        WHERE lastCommunication LIKE CONCAT(#{date, jdbcType=VARCHAR}, '%')
+        AND watchId = #{watchId, jdbcType=VARCHAR}
+        ORDER BY locationId DESC
+        LIMIT 1
+    </select>
+
+
+</mapper>

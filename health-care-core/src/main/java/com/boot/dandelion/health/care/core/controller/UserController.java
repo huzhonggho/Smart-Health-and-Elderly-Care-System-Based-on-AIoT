@@ -127,7 +127,7 @@ public class UserController {
         } catch (Exception e) {
             log.error("检验秘钥：{}", ExceptionUtils.getStackTrace(e));
             responseWrapper.setMsg(ExceptionUtils.getStackTrace(e));
-            responseWrapper.setCode(String.valueOf(ResultCodeEnum.FAIL.getCode()));
+            responseWrapper.setCode(String.valueOf(ResultCodeEnum.TOKEN_FAIL.getCode()));
         }
 
         return responseWrapper;

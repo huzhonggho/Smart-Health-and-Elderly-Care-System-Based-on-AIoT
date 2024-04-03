@@ -34,4 +34,24 @@ public class MattressHisServiceImpl implements MattressHisService {
     public int selectCountByMattressIdAndDate(Map<String, Object> params) {
         return mapper.selectCountByMattressIdAndDate(params);
     }
+
+    @Override
+    public List<MattressHistory> selectMaxHistoryIdByMattressIdAndDate(Map<String, Object> params) {
+        return mapper.selectMaxHistoryIdByMattressIdAndDate(params);
+    }
+
+    @Override
+    public int updateByHistoryId(MattressHistory mattressHistory) {
+        return mapper.updateByHistoryId(mattressHistory);
+    }
+
+    @Override
+    public List<MattressHistory> selectByMattressIdDateAndStart(Map<String, Object> params) {
+        return mapper.selectByMattressIdDateAndStart(params);
+    }
+
+    @Override
+    public List<MattressHistory> selectByMattressIdDateStartAndEnd(Map<String, Object> params) {
+        return mapper.selectByMattressIdDateStartAndEnd(params);
+    }
 }

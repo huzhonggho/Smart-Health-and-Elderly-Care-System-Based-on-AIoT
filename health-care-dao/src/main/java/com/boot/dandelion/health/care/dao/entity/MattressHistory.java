@@ -18,4 +18,6 @@ public class MattressHistory {
     private String alam;
     private String mattressId;
     private String duration;
+    private String start;
+    private String end;
 }
