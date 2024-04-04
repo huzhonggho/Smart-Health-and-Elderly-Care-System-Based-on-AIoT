@@ -9,4 +9,7 @@ public interface MattressDetailService {
     int insert(MattressDetail mattressDetail);
 
     MattressDetail selectByDateAndMattressId(Map<String, Object> params);
+
+    int updateByMattressIdAndDate(MattressDetail mattressDetail);
+
 }

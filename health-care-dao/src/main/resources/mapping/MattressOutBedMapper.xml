@@ -31,6 +31,7 @@
         FROM mattress_out_bed
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY start ASC
     </select>
 
 </mapper>

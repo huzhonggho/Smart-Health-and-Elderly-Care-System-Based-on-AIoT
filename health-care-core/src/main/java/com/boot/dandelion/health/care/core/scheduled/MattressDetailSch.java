@@ -20,6 +20,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 
@@ -30,7 +32,7 @@ public class MattressDetailSch {
     private final String MATTRESSID = "B00681";
     private final String REGIONAL = "TestUnit";
 
-//    @Scheduled(fixedRate = 86400000) // 每天执行一次
+    @Scheduled(fixedRate = 3600000) // 每小时执行一次
     public void fetchDataAndSaveToDatabase() {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -53,7 +55,9 @@ public class MattressDetailSch {
             CloseableHttpResponse response = httpClient.execute(httpGet);
             HttpEntity entity = response.getEntity();
 
-
+            Map<String, Object> params = new HashMap<>();
+            params.put("mattressId", MATTRESSID);
+            params.put("date", getDate());
             if (entity != null) {
                 String responseString = EntityUtils.toString(entity);
                 // 处理响应数据，可以根据需要解析JSON等操作
@@ -70,7 +74,6 @@ public class MattressDetailSch {
                     if (dataNode != null && dataNode.isArray()) {
                         System.out.println(dataNode.get(0));
                         innerDataNode = dataNode.get(0);
-
 
                         MattressDetail info = new MattressDetail();
 
@@ -93,16 +96,17 @@ public class MattressDetailSch {
                         info.setGeneral(innerDataNode.path("General").asText());
                         info.setHeartRespirationRatio(innerDataNode.path("HeartRespirationRatio").asText());
                         info.setScores(innerDataNode.path("Scores").asText());
-                        service.insert(info);
 
-
+                        MattressDetail mattressDetail = service.selectByDateAndMattressId(params);
+                        if (mattressDetail != null){
+                            info.setDetailId(mattressDetail.getDetailId());
+                            service.updateByMattressIdAndDate(info);
+                        }else {
+                            service.insert(info);
+                        }
                     }
                 }
-
-
             }
-
-
             try {
                 httpClient.close();
             } catch (IOException e) {
@@ -111,11 +115,10 @@ public class MattressDetailSch {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     private String getDate() {
-        LocalDateTime currentDate = LocalDateTime.now().minusHours(1);
+        LocalDateTime currentDate = LocalDateTime.now();
 
         // 自定义日期格式
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");

@@ -9,5 +9,6 @@ import java.util.Map;
 public interface MattressDetailMapper {
     int insert(MattressDetail mattressDetail);
     MattressDetail selectByDateAndMattressId(Map<String, Object> params);
+    int updateByMattressIdAndDate(MattressDetail mattressDetail);
 
 }

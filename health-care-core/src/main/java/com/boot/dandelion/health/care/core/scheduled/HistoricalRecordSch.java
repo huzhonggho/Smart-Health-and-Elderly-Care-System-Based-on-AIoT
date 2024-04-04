@@ -12,6 +12,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class HistoricalRecordSch {
     private final String MATTRESSID = "B00681";
     private final String REGIONAL = "TestUnit";
 
-//    @Scheduled(fixedRate = 3600000) // 每小时执行一次
+    @Scheduled(fixedRate = 3600000) // 每小时执行一次
     public void callAPIAndProcessResponse() {
         try {
             CloseableHttpClient httpClient = HttpClients.createDefault();

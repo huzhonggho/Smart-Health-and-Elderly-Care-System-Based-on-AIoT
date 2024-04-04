@@ -49,4 +49,30 @@
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
     </select>
+
+    <update id="updateByMattressIdAndDate" parameterType="com.boot.dandelion.health.care.dao.entity.MattressDetail">
+        update mattress_detail
+        set
+            mattressId = #{mattressId,jdbcType=VARCHAR},
+            date = #{date,jdbcType=VARCHAR},
+            awake = #{awake,jdbcType=VARCHAR},
+            inSleep = #{inSleep,jdbcType=VARCHAR},
+            shallowSleep = #{shallowSleep,jdbcType=VARCHAR},
+            deepSleep = #{deepSleep,jdbcType=VARCHAR},
+            totalSleep = #{totalSleep,jdbcType=VARCHAR},
+            numberOfAlarms = #{numberOfAlarms,jdbcType=VARCHAR},
+            numberOfFreeBeds = #{numberOfFreeBeds,jdbcType=VARCHAR},
+            respirationAverage = #{respirationAverage,jdbcType=VARCHAR},
+            respirationMax = #{respirationMax,jdbcType=VARCHAR},
+            respirationMin = #{respirationMin,jdbcType=VARCHAR},
+            heartRateAverage = #{heartRateAverage,jdbcType=VARCHAR},
+            heartRateMax = #{heartRateMax,jdbcType=VARCHAR},
+            heartRateMin = #{heartRateMin,jdbcType=VARCHAR},
+            general = #{general,jdbcType=VARCHAR},
+            heartRespirationRatio = #{heartRespirationRatio,jdbcType=VARCHAR},
+            scores = #{scores,jdbcType=VARCHAR}
+        where mattressId = #{mattressId,jdbcType=VARCHAR}
+          and date = #{date,jdbcType=VARCHAR}
+    </update>
+
 </mapper>

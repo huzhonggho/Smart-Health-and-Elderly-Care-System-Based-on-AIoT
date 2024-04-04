@@ -25,4 +25,9 @@ public class MattressDetailServiceImpl implements MattressDetailService {
     public MattressDetail selectByDateAndMattressId(Map<String, Object> params) {
         return mapper.selectByDateAndMattressId(params);
     }
+
+    @Override
+    public int updateByMattressIdAndDate(MattressDetail mattressDetail) {
+        return mapper.updateByMattressIdAndDate(mattressDetail);
+    }
 }

@@ -34,7 +34,7 @@ public class WatchStepsSch {
     private static final String IMEI = "860870050286116";
     private static final String TIME_OFFSET = "8";
 
-//    @Scheduled(fixedRate = 3600000) // 每小时执行一次
+    @Scheduled(fixedRate = 3600000) // 每小时执行一次
     public void fetchDataAndSave() {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         String DATE = LocalDate.now().format(DATE_FORMATTER);

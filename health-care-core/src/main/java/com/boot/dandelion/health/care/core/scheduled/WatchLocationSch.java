@@ -28,7 +28,7 @@ public class WatchLocationSch {
     private static final String IMEI = "860870050286116";
     private static final String MAP_TYPE = "Baidu";
 
-//    @Scheduled(fixedRate = 600000) // 每十分钟执行一次
+    @Scheduled(fixedRate = 600000) // 每十分钟执行一次
     public void fetchDataAndSave() {
         CloseableHttpClient httpClient = HttpClients.createDefault();
 
