@@ -16,16 +16,21 @@ import java.util.Map;
 public class MattressSleepServiceImpl implements MattressSleepService {
 
     @Resource
-    private MattressSleepMapper sleepResultMapper;
+    private MattressSleepMapper mapper;
 
     @Override
     public int insert(MattressSleep sleepEntity) {
-        return sleepResultMapper.insert(sleepEntity);
+        return mapper.insert(sleepEntity);
     }
 
     @Override
     public List<MattressSleep> selectByDateAndMattressId(Map<String, Object> params) {
-        return sleepResultMapper.selectByDateAndMattressId(params);
+        return mapper.selectByDateAndMattressId(params);
+    }
+
+    @Override
+    public MattressSleep selectByAllFields(Map<String, Object> params) {
+        return mapper.selectByAllFields(params);
     }
 
 

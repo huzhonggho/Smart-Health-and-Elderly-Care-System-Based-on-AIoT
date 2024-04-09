@@ -12,4 +12,7 @@ public interface MattressTurnBodyService {
 
     List<MattressTurnBody> selectByDateAndMattressId(Map<String, Object> params);
 
+    MattressTurnBody selectMaxDataTimeByMattressIdAndDate(Map<String, Object> params);
+
+
 }

@@ -28,5 +28,10 @@ public class TurnBodyServiceImpl implements MattressTurnBodyService {
         return mattressTurnBodyMapper.selectByDateAndMattressId(params);
     }
 
+    @Override
+    public MattressTurnBody selectMaxDataTimeByMattressIdAndDate(Map<String, Object> params) {
+        return mattressTurnBodyMapper.selectMaxDataTimeByMattressIdAndDate(params);
+    }
+
 
 }

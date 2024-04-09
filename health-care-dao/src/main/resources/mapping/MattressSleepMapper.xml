@@ -35,5 +35,16 @@
         FROM mattress_sleep
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY startDate ASC
     </select>
+
+    <select id="selectByAllFields" resultMap="BaseResultMap" parameterType="com.boot.dandelion.health.care.dao.entity.MattressSleep">
+        SELECT <include refid="BaseColumnList"/>
+        FROM mattress_sleep
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        AND startDate = #{startDate, jdbcType=VARCHAR}
+        AND endDate = #{endDate, jdbcType=VARCHAR}
+    </select>
+
 </mapper>

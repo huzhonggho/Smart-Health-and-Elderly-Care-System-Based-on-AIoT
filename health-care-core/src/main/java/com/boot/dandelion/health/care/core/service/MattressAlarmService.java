@@ -9,6 +9,7 @@ public interface MattressAlarmService {
     int insert(MattressAlarm mattressAlarm);
 
     List<MattressAlarm> selectByDateAndMattressId(Map<String, Object> params);
+    MattressAlarm selectByAllFields(Map<String, Object> params);
 
 
 }

@@ -30,6 +30,16 @@
         FROM mattress_alarm
         WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
         AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY start ASC
     </select>
 
+    <select id="selectByAllFields" resultMap="BaseResultMap" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_alarm
+        WHERE mattressId = #{mattressId,jdbcType=VARCHAR}
+        AND date = #{date,jdbcType=VARCHAR}
+        AND start = #{start,jdbcType=VARCHAR}
+        AND end = #{end,jdbcType=VARCHAR}
+    </select>
 </mapper>

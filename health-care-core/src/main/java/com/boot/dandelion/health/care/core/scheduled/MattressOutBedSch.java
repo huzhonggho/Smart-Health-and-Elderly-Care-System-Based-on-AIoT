@@ -82,7 +82,7 @@ public class MattressOutBedSch {
 
                             for (JsonNode innerData : innerDataArray) {
 
-                                if (data.has("data")) {
+                                if (innerData.has("data")) {
                                     JsonNode statusArray = innerData.get("data");
 
                                     for (JsonNode status : statusArray) {

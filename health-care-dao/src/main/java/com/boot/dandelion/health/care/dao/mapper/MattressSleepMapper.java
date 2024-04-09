@@ -13,4 +13,5 @@ public interface MattressSleepMapper {
     int insert(MattressSleep sleepEntity);
     List<MattressSleep> selectByDateAndMattressId(Map<String, Object> params);
 
+    MattressSleep selectByAllFields(Map<String, Object> params);
 }

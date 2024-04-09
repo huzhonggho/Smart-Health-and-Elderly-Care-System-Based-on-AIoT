@@ -14,15 +14,20 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class MattressAlarmServiceImpl implements MattressAlarmService {
     @Resource
-    private MattressAlarmMapper dailyAlarmMapper;
+    private MattressAlarmMapper mapper;
     @Override
     public int insert(MattressAlarm mattressAlarm) {
-        return dailyAlarmMapper.insert(mattressAlarm);
+        return mapper.insert(mattressAlarm);
     }
 
     @Override
     public List<MattressAlarm> selectByDateAndMattressId(Map<String, Object> params) {
-        return dailyAlarmMapper.selectByDateAndMattressId(params);
+        return mapper.selectByDateAndMattressId(params);
+    }
+
+    @Override
+    public MattressAlarm selectByAllFields(Map<String, Object> params) {
+        return mapper.selectByAllFields(params);
     }
 
 }

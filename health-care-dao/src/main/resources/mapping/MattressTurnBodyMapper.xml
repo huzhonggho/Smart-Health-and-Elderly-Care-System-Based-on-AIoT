@@ -33,4 +33,14 @@
         AND date = #{date, jdbcType=VARCHAR}
     </select>
 
+    <select id="selectMaxDataTimeByMattressIdAndDate" resultType="com.boot.dandelion.health.care.dao.entity.MattressTurnBody" parameterType="map">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM mattress_turn_body
+        WHERE mattressId = #{mattressId, jdbcType=VARCHAR}
+        AND date = #{date, jdbcType=VARCHAR}
+        ORDER BY dataTime DESC
+        LIMIT 1
+    </select>
+
 </mapper>
