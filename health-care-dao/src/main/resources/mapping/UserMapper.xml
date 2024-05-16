@@ -4,28 +4,25 @@
     <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.User">
 
         <result column="userId" jdbcType="INTEGER" property="userId"/>
-        <result column="tel" jdbcType="VARCHAR" property="tel"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="dept" jdbcType="VARCHAR" property="dept"/>
         <result column="userName" jdbcType="VARCHAR" property="userName"/>
-        <result column="status" jdbcType="VARCHAR" property="status"/>
-        <result column="authority" jdbcType="VARCHAR" property="authority"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
         <result column="gender" jdbcType="VARCHAR" property="gender"/>
+        <result column="createTime" jdbcType="VARCHAR" property="createTime"/>
+        <result column="updateTime" jdbcType="VARCHAR" property="updateTime"/>
 
     </resultMap>
 
     <sql id="BaseColumnList">
-        userId
-        ,tel, password, dept, userName, status, gender, authority
+        userId,tel, password,gender, userName, createTime, updateTime
     </sql>
 
 
     <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.User">
         insert into tb_user (tel, password,
-                             dept, userName, status, authority, gender)
+                             updateTime, userName, createTime, gender)
         values (#{tel,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-                #{dept,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
-                #{authority,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR})
+                #{updateTime,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{gender,jdbcType=VARCHAR})
     </insert>
 
     <select id="selectUserByName" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -42,133 +39,21 @@
         where userId = #{userId,jdbcType=INTEGER}
     </select>
 
-    <select id="selectUsersByName" parameterType="java.lang.String" resultMap="BaseResultMap">
-        select *
-        from tb_user
-        where name like concat('%', #{name}, '%')
-    </select>
-
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-        select userId, tel, password, dept, name, status
+        select userId, tel, password, updateTime, name, createTime
         from tb_user
         where userId = #{userId,jdbcType=INTEGER}
     </select>
-
-
-
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete
-        from tb_user
-        where userId = #{userId,jdbcType=INTEGER}
-    </delete>
-
-    <update id="updateByPrimaryKey" parameterType="com.boot.dandelion.health.care.dao.entity.User">
-        update tb_user
-        set tel      = #{tel,jdbcType=VARCHAR},
-            password = #{password,jdbcType=VARCHAR},
-            dept     = #{dept,jdbcType=VARCHAR},
-            name     = #{name,jdbcType=VARCHAR},
-            status   = #{status,jdbcType=VARCHAR}
-        where userId = #{userId,jdbcType=INTEGER}
-    </update>
 
     <select id="selectAll" resultMap="BaseResultMap">
-        select userId, tel, password, dept, name, status
+        select userId, tel, password, updateTime, name, createTime
         from tb_user
     </select>
 
-    <select id="getUserByLoginTel" resultMap="BaseResultMap" parameterType="java.lang.String">
+    <select id="selectUserByTel" parameterType="java.lang.String" resultMap="BaseResultMap">
         select
         <include refid="BaseColumnList"/>
         from tb_user
-        where tel = #{loginTel,jdbcType=VARCHAR}
+        where tel = #{tel,jdbcType=INTEGER}
     </select>
-
-    <delete id="deleteByUserPhone" parameterType="java.lang.String">
-        delete
-        from tb_user
-        where tel = #{userPhone,jdbcType=VARCHAR}
-    </delete>
-
-    <update id="updateUserPasswordByPhone" parameterType="com.boot.dandelion.health.care.dao.entity.User">
-        update tb_user
-        set password = #{password,jdbcType=VARCHAR}
-        where tel = #{tel,jdbcType=VARCHAR}
-    </update>
-
-    <select id="queryUserList" parameterType="com.boot.dandelion.health.care.common.condition.UserCondition"
-            resultMap="BaseResultMap">
-        select
-        <include refid="BaseColumnList"/>
-        from tb_user
-        <where>
-            <if test="name != null and name != ''">
-                and name like '%${name}%'
-            </if>
-            <if test="userPhone != null and userPhone != ''">
-                and tel like '%${userPhone}%'
-            </if>
-            <if test="dept != null and dept != ''">
-                and dept like '%${dept}%'
-            </if>
-            <if test="status != null and status != ''">
-                and status = #{status}
-            </if>
-        </where>
-        limit #{start},#{limit}
-    </select>
-
-    <select id="queryUserCount" parameterType="com.boot.dandelion.health.care.common.condition.UserCondition"
-            resultType="int">
-        SELECT count(1) from (
-        select
-        <include refid="BaseColumnList"/>
-        from tb_user
-        <where>
-            <if test="name != null and name != ''">
-                and name like '%${name}%'
-            </if>
-            <if test="userPhone != null and userPhone != ''">
-                and tel like '%${userPhone}%'
-            </if>
-            <if test="dept != null and dept != ''">
-                and dept like '%${dept}%'
-            </if>
-            <if test="status != null and status != ''">
-                and status = #{status}
-            </if>
-        </where>
-        limit #{start},#{limit}
-        ) t
-    </select>
-
-    <select id="queryAllUser"
-            resultMap="BaseResultMap">
-        select
-        <include refid="BaseColumnList"/>
-        from tb_user
-
-    </select>
-
-
-    <update id="updateUser" parameterType="com.boot.dandelion.health.care.dao.entity.User">
-        update tb_user
-        set password = #{password},
-            tel=#{tel},
-            dept=#{dept},
-            name=#{name},
-            status=#{status},
-            authority=#{authority},
-            gender=#{gender}
-
-        where tel = #{tel}
-    </update>
-
-    <select id="getNum" resultType="int">
-        select count(*)
-        from tb_user
-
-    </select>
-
-
 </mapper>

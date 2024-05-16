@@ -18,27 +18,17 @@ public class UserFamilyServiceImpl implements UserFamilyService {
 
 
     @Override
-    public List<UserFamily> selectAll() {
-        return userFamilyMapper.selectAll();
+    public int addFamily(UserFamily userFamily) {
+        return userFamilyMapper.addFamily(userFamily);
     }
 
     @Override
-    public UserFamily getUserByFamilyName(String familyName) {
-        return userFamilyMapper.getUserByFamilyName(familyName);
+    public int updateFamily(UserFamily userFamily) {
+        return userFamilyMapper.updateFamily(userFamily);
     }
 
     @Override
-    public int addUser(UserFamily userFamily) {
-        return userFamilyMapper.addUser(userFamily);
-    }
-
-    @Override
-    public int updateUser(UserFamily userFamily) {
-        return userFamilyMapper.updateUser(userFamily);
-    }
-
-    @Override
-    public int delUserByFamilyName(String familyName) {
-        return userFamilyMapper.delUserByFamilyName(familyName);
+    public UserFamily selectByUserId(String userId) {
+        return userFamilyMapper.selectByUserId(userId);
     }
 }

@@ -1,6 +1,5 @@
 package com.boot.dandelion.health.care.dao.entity;
 
-import com.boot.dandelion.health.care.common.entity.UserInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,13 +7,16 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User {
-    private Integer userId;
-    private String password;
-    private String userName;
-    private String tel;
-    private String gender;
-    private String createTime;
-    private String updateTime;
+public class DeviceMap {
 
+    private String userId;
+    private String familyId;
+    private String memberId;
+
+    private String deviceType;
+    private String deviceId;
+    private String createTime;
+    private String createUser;
+    private String updateTime;
+    private String updateUser;
 }

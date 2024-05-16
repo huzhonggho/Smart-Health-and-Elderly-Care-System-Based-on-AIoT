@@ -1,5 +1,7 @@
 package com.boot.dandelion.health.care.common.util;
 
+import cn.hutool.core.util.StrUtil;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.boot.dandelion.health.care.common.entity.StaticBasicInfo;
 import com.boot.dandelion.health.care.common.entity.UserInfo;
 import io.jsonwebtoken.Claims;
@@ -31,6 +33,39 @@ public class UserUtils {
         HttpServletRequest request = ((ServletRequestAttributes) requestAttributes).getRequest();
         return (UserInfo) request.getSession().getAttribute(StaticBasicInfo.LOGIN_USER);
     }
+    public static Integer getUserId() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String token = request.getHeader("token");
+            if (StrUtil.isNotBlank(token)) {
+                DecodedJWT tokenInfo = JwtUtil.getTokenInfo(token);
+                Integer userId = Integer.parseInt(tokenInfo.getClaim("userId").asString());
+                System.out.println("FUSERID:"+userId);
+                return userId;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
+    public static Integer getMemberId() {
+        try {
+            HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+            String token = request.getHeader("token");
+            if (StrUtil.isNotBlank(token)) {
+                DecodedJWT tokenInfo = JwtUtil.getTokenInfo(token);
+                Integer memberId = Integer.parseInt(tokenInfo.getClaim("memberId").asString());
+                System.out.println("FMEMBERID:"+memberId);
+
+                return memberId;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
+    }
+
 
     /**
      * 根据请求头携带的token，解析获取用户手机号

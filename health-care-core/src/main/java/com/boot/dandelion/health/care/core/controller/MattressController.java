@@ -48,6 +48,7 @@ public class MattressController {
     private MattressAlarmService mattressAlarmService;
     @Resource
     private MattressTurnBodyService mattressTurnBodyService;
+
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @ApiOperation("分页和模糊查询")

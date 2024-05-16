@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MattressInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.MattressInfo">
+        <result column="community" property="community" jdbcType="VARCHAR"/>
+        <result column="mattressId" property="mattressId" jdbcType="VARCHAR"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="sex" property="sex" jdbcType="VARCHAR"/>
+        <result column="minResp" property="minResp" jdbcType="VARCHAR"/>
+        <result column="maxResp" property="maxResp" jdbcType="VARCHAR"/>
+        <result column="minHR" property="minHR" jdbcType="VARCHAR"/>
+        <result column="maxHR" property="maxHR" jdbcType="VARCHAR"/>
+        <result column="flage1" property="flage1" jdbcType="VARCHAR"/>
+        <result column="timeStar1" property="timeStar1" jdbcType="VARCHAR"/>
+        <result column="timeEnd1" property="timeEnd1" jdbcType="VARCHAR"/>
+        <result column="offBed1" property="offBed1" jdbcType="VARCHAR"/>
+        <result column="mov1" property="mov1" jdbcType="VARCHAR"/>
+        <result column="flage2" property="flage2" jdbcType="VARCHAR"/>
+        <result column="timeStar2" property="timeStar2" jdbcType="VARCHAR"/>
+        <result column="timeEnd2" property="timeEnd2" jdbcType="VARCHAR"/>
+        <result column="offBed2" property="offBed2" jdbcType="VARCHAR"/>
+        <result column="mov2" property="mov2" jdbcType="VARCHAR"/>
+        <result column="flage3" property="flage3" jdbcType="VARCHAR"/>
+        <result column="timeStar3" property="timeStar3" jdbcType="VARCHAR"/>
+        <result column="timeEnd3" property="timeEnd3" jdbcType="VARCHAR"/>
+        <result column="offBed3" property="offBed3" jdbcType="VARCHAR"/>
+        <result column="mov3" property="mov3" jdbcType="VARCHAR"/>
+        <result column="flage4" property="flage4" jdbcType="VARCHAR"/>
+        <result column="timeStar4" property="timeStar4" jdbcType="VARCHAR"/>
+        <result column="timeEnd4" property="timeEnd4" jdbcType="VARCHAR"/>
+        <result column="offBed4" property="offBed4" jdbcType="VARCHAR"/>
+        <result column="mov4" property="mov4" jdbcType="VARCHAR"/>
+        <result column="flage5" property="flage5" jdbcType="VARCHAR"/>
+        <result column="timeStar5" property="timeStar5" jdbcType="VARCHAR"/>
+        <result column="timeEnd5" property="timeEnd5" jdbcType="VARCHAR"/>
+        <result column="offBed5" property="offBed5" jdbcType="VARCHAR"/>
+        <result column="mov5" property="mov5" jdbcType="VARCHAR"/>
+        <result column="age" property="age" jdbcType="VARCHAR"/>
+        <result column="trunTime" property="trunTime" jdbcType="VARCHAR"/>
+        <result column="turn" property="turn" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <update id="updateByMattressId" parameterType="com.boot.dandelion.health.care.dao.entity.MattressInfo">
+        update mattress_info
+        set community = #{community},
+            name = #{name},
+            address = #{address},
+            sex = #{sex},
+            minResp = #{minResp},
+            maxResp = #{maxResp},
+            minHR = #{minHR},
+            maxHR = #{maxHR},
+            flage1 = #{flage1},
+            timeStar1 = #{timeStar1},
+            timeEnd1 = #{timeEnd1},
+            offBed1 = #{offBed1},
+            mov1 = #{mov1},
+            flage2 = #{flage2},
+            timeStar2 = #{timeStar2},
+            timeEnd2 = #{timeEnd2},
+            offBed2 = #{offBed2},
+            mov2 = #{mov2},
+            flage3 = #{flage3},
+            timeStar3 = #{timeStar3},
+            timeEnd3 = #{timeEnd3},
+            offBed3 = #{offBed3},
+            mov3 = #{mov3},
+            flage4 = #{flage4},
+            timeStar4 = #{timeStar4},
+            timeEnd4 = #{timeEnd4},
+            offBed4 = #{offBed4},
+            mov4 = #{mov4},
+            flage5 = #{flage5},
+            timeStar5 = #{timeStar5},
+            timeEnd5 = #{timeEnd5},
+            offBed5 = #{offBed5},
+            mov5 = #{mov5},
+            age = #{age},
+            trunTime = #{trunTime},
+            turn = #{turn}
+        where mattressId = #{mattressId}
+    </update>
+
+    <select id="selectByMattressId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select *
+        from mattress_info
+        where mattressId = #{mattressId}
+    </select>
+
+    <insert id="insertMattressInfo" parameterType="com.boot.dandelion.health.care.dao.entity.MattressInfo">
+        insert into mattress_info (community, mattressId, name, address, sex, minResp, maxResp, minHR, maxHR,
+                                   flage1, timeStar1, timeEnd1, offBed1, mov1,
+                                   flage2, timeStar2, timeEnd2, offBed2, mov2,
+                                   flage3, timeStar3, timeEnd3, offBed3, mov3,
+                                   flage4, timeStar4, timeEnd4, offBed4, mov4,
+                                   flage5, timeStar5, timeEnd5, offBed5, mov5,
+                                   age, trunTime, turn)
+        values (#{community}, #{mattressId}, #{name}, #{address}, #{sex}, #{minResp}, #{maxResp}, #{minHR}, #{maxHR},
+                #{flage1}, #{timeStar1}, #{timeEnd1}, #{offBed1}, #{mov1},
+                #{flage2}, #{timeStar2}, #{timeEnd2}, #{offBed2}, #{mov2},
+                #{flage3}, #{timeStar3}, #{timeEnd3}, #{offBed3}, #{mov3},
+                #{flage4}, #{timeStar4}, #{timeEnd4}, #{offBed4}, #{mov4},
+                #{flage5}, #{timeStar5}, #{timeEnd5}, #{offBed5}, #{mov5},
+                #{age}, #{trunTime}, #{turn})
+    </insert>
+</mapper>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.WatchBloodPressureMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.WatchBloodPressure">
+        <result column="pressureId" jdbcType="INTEGER" property="pressureId"/>
+        <result column="diastolic" jdbcType="VARCHAR" property="diastolic"/>
+        <result column="shrink" jdbcType="VARCHAR" property="shrink"/>
+        <result column="lastUpdate" jdbcType="VARCHAR" property="lastUpdate"/>
+        <result column="watchId" jdbcType="VARCHAR" property="watchId"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        pressureId, diastolic, shrink, lastUpdate, watchId
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.WatchBloodPressure">
+        insert into watch_blood_pressure (diastolic, shrink, lastUpdate, watchId)
+        values (
+                   #{diastolic,jdbcType=VARCHAR},
+                   #{shrink,jdbcType=VARCHAR},
+                   #{lastUpdate,jdbcType=VARCHAR},
+                   #{watchId,jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <update id="update" parameterType="com.boot.dandelion.health.care.dao.entity.WatchBloodPressure">
+        update watch_blood_pressure
+        set diastolic = #{diastolic,jdbcType=VARCHAR},
+            shrink = #{shrink,jdbcType=VARCHAR},
+            lastUpdate = #{lastUpdate,jdbcType=VARCHAR}
+        where pressureId = #{pressureId,jdbcType=INTEGER}
+          and watchId = #{watchId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteById" parameterType="map">
+        delete from watch_blood_pressure
+        where pressureId = #{pressureId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectByWatchIdAndDate" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM watch_blood_pressure
+        WHERE watchId = #{watchId, jdbcType=VARCHAR}
+        AND lastUpdate LIKE CONCAT(#{date, jdbcType=VARCHAR}, '%')
+        ORDER BY lastUpdate ASC
+    </select>
+
+</mapper>

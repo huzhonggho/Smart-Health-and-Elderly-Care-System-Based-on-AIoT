@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.WatchHeartMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.WatchHeart">
+        <result column="heartId" jdbcType="INTEGER" property="heartId"/>
+        <result column="watchId" jdbcType="VARCHAR" property="watchId"/>
+        <result column="steps" jdbcType="VARCHAR" property="steps"/>
+        <result column="heartbeat" jdbcType="VARCHAR" property="heartbeat"/>
+        <result column="bloodPressure" jdbcType="VARCHAR" property="bloodPressure"/>
+        <result column="diastolic" jdbcType="VARCHAR" property="diastolic"/>
+        <result column="shrink" jdbcType="VARCHAR" property="shrink"/>
+        <result column="lastUpdate" jdbcType="VARCHAR" property="lastUpdate"/>
+        <result column="bloodSugar" jdbcType="VARCHAR" property="bloodSugar"/>
+        <result column="bloodOxygen" jdbcType="VARCHAR" property="bloodOxygen"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        heartId, watchId, steps, heartbeat, bloodPressure, diastolic, shrink, lastUpdate, bloodSugar, bloodOxygen
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.WatchHeart">
+        insert into watch_heart (watchId, steps, heartbeat, bloodPressure, diastolic, shrink, lastUpdate, bloodSugar, bloodOxygen)
+        values (
+                   #{watchId,jdbcType=VARCHAR},
+                   #{steps,jdbcType=VARCHAR},
+                   #{heartbeat,jdbcType=VARCHAR},
+                   #{bloodPressure,jdbcType=VARCHAR},
+                   #{diastolic,jdbcType=VARCHAR},
+                   #{shrink,jdbcType=VARCHAR},
+                   #{lastUpdate,jdbcType=VARCHAR},
+                   #{bloodSugar,jdbcType=VARCHAR},
+                   #{bloodOxygen,jdbcType=VARCHAR}
+               )
+    </insert>
+
+    <update id="update" parameterType="com.boot.dandelion.health.care.dao.entity.WatchHeart">
+        update watch_heart
+        set steps = #{steps,jdbcType=VARCHAR},
+            heartbeat = #{heartbeat,jdbcType=VARCHAR},
+            bloodPressure = #{bloodPressure,jdbcType=VARCHAR},
+            diastolic = #{diastolic,jdbcType=VARCHAR},
+            shrink = #{shrink,jdbcType=VARCHAR},
+            lastUpdate = #{lastUpdate,jdbcType=VARCHAR},
+            bloodSugar = #{bloodSugar,jdbcType=VARCHAR},
+            bloodOxygen = #{bloodOxygen,jdbcType=VARCHAR}
+        where heartId = #{heartId,jdbcType=INTEGER}
+          and watchId = #{watchId,jdbcType=VARCHAR}
+    </update>
+
+    <delete id="deleteById" parameterType="map">
+        delete from watch_heart
+        where heartId = #{heartId,jdbcType=INTEGER}
+    </delete>
+
+    <select id="selectByWatchIdAndDate" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="BaseColumnList"/>
+        FROM watch_heart
+        WHERE watchId = #{watchId, jdbcType=VARCHAR}
+        AND lastUpdate LIKE CONCAT(#{date, jdbcType=VARCHAR}, '%')
+        ORDER BY lastUpdate ASC
+    </select>
+
+</mapper>

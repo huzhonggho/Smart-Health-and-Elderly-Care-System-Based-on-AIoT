@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.WatchInfoMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.WatchInfo">
+        <result column="deviceId" jdbcType="VARCHAR" property="deviceId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="sn" jdbcType="VARCHAR" property="sn"/>
+        <result column="modelName" jdbcType="VARCHAR" property="modelName"/>
+        <result column="phoneNum" jdbcType="VARCHAR" property="phoneNum"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="cellPhone" jdbcType="VARCHAR" property="cellPhone"/>
+        <result column="expireTime" jdbcType="VARCHAR" property="expireTime"/>
+        <result column="createTime" jdbcType="VARCHAR" property="createTime"/>
+        <result column="deviceStatus" jdbcType="VARCHAR" property="deviceStatus"/>
+        <result column="dataContext" jdbcType="VARCHAR" property="dataContext"/>
+        <result column="model" jdbcType="VARCHAR" property="model"/>
+        <result column="userID" jdbcType="VARCHAR" property="userID"/>
+        <result column="wear" jdbcType="VARCHAR" property="wear"/>
+        <result column="battery" jdbcType="VARCHAR" property="battery"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        deviceId, name, sn, modelName, phoneNum, userName, cellPhone, expireTime, createTime, deviceStatus, dataContext, model, userID, wear, battery
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.WatchInfo">
+        insert into watch_info (deviceId, name, sn, modelName, phoneNum, userName, cellPhone, expireTime, createTime, deviceStatus, dataContext, model, userID, wear, battery)
+        values (#{deviceId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{sn,jdbcType=VARCHAR}, #{modelName,jdbcType=VARCHAR}, #{phoneNum,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, #{cellPhone,jdbcType=VARCHAR}, #{expireTime,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{deviceStatus,jdbcType=VARCHAR}, #{dataContext,jdbcType=VARCHAR}, #{model,jdbcType=VARCHAR}, #{userID,jdbcType=VARCHAR}, #{wear,jdbcType=VARCHAR}, #{battery,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectBySN" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from watch_info
+        where sn = #{sn,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

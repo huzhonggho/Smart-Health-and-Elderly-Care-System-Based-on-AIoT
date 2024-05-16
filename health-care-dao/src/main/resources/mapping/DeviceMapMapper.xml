@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.DeviceMapMapper">
+
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.DeviceMap">
+        <result column="userId" property="userId" jdbcType="VARCHAR"/>
+        <result column="familyId" property="familyId" jdbcType="VARCHAR"/>
+        <result column="deviceType" property="deviceType" jdbcType="VARCHAR"/>
+        <result column="deviceId" property="deviceId" jdbcType="VARCHAR"/>
+        <result column="memberId" property="memberId" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createTime" jdbcType="VARCHAR"/>
+        <result column="createUser" property="createUser" jdbcType="VARCHAR"/>
+        <result column="updateTime" property="updateTime" jdbcType="VARCHAR"/>
+        <result column="updateUser" property="updateUser" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.DeviceMap">
+        insert into device_map (userId, familyId, deviceType, deviceId, createTime, createUser, updateTime, updateUser,memberId)
+        values (#{userId,jdbcType=VARCHAR}, #{familyId,jdbcType=VARCHAR}, #{deviceType,jdbcType=VARCHAR}, #{deviceId,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{createUser,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="selectByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select *
+        from device_map
+        where userId = #{userId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByFamilyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select *
+        from device_map
+        where familyId = #{familyId,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByDeviceId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select *
+        from device_map
+        where deviceId = #{deviceId,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateByDeviceId" parameterType="com.boot.dandelion.health.care.dao.entity.DeviceMap">
+        update device_map
+        set userId = #{userId,jdbcType=VARCHAR},
+            familyId = #{familyId,jdbcType=VARCHAR},
+            deviceType = #{deviceType,jdbcType=VARCHAR},
+            createTime = #{createTime,jdbcType=VARCHAR},
+            createUser = #{createUser,jdbcType=VARCHAR},
+            updateTime = #{updateTime,jdbcType=VARCHAR},
+            updateUser = #{updateUser,jdbcType=VARCHAR},
+            memberId = #{memberId,jdbcType=VARCHAR}
+        where deviceId = #{deviceId,jdbcType=VARCHAR}
+    </update>
+
+    <select id="selectByDeviceTypeAndId" parameterType="map" resultMap="BaseResultMap">
+        select *
+        from device_map
+        where deviceType = #{deviceType,jdbcType=VARCHAR} and deviceId = #{deviceId,jdbcType=VARCHAR}
+    </select>
+
+</mapper>

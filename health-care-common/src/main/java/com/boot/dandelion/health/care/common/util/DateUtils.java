@@ -26,8 +26,8 @@ public class DateUtils {
     public static final DateTimeFormatter DFY_MD_HMS = DateTimeFormatter.ofPattern(PATTERN_EXPAND);
     public static final DateTimeFormatter DFY_MD = DateTimeFormatter.ofPattern(PATTERN);
     public static final SimpleDateFormat SDF_MD_HMS = new SimpleDateFormat(PATTERN_EXPAND);
-    public static final SimpleDateFormat  SDF_MD = new SimpleDateFormat(PATTERN);
-    public static final SimpleDateFormat  SDF_MD_HMS_US = new SimpleDateFormat(PATTERN_EXPAND_US, Locale.US);
+    public static final SimpleDateFormat SDF_MD = new SimpleDateFormat(PATTERN);
+    public static final SimpleDateFormat SDF_MD_HMS_US = new SimpleDateFormat(PATTERN_EXPAND_US, Locale.US);
 
     /**
      * LocalDateTime 转时间戳
@@ -41,6 +41,7 @@ public class DateUtils {
 
     /**
      * 时间戳转LocalDateTime
+     *
      * @param timeStamp /
      * @return /
      */
@@ -86,7 +87,7 @@ public class DateUtils {
      * 日期 格式化
      *
      * @param localDateTime /
-     * @param patten /
+     * @param patten        /
      * @return /
      */
     public static String localDateTimeFormat(LocalDateTime localDateTime, String patten) {
@@ -98,7 +99,7 @@ public class DateUtils {
      * 日期 格式化
      *
      * @param localDateTime /
-     * @param df /
+     * @param df            /
      * @return /
      */
     public static String localDateTimeFormat(LocalDateTime localDateTime, DateTimeFormatter df) {
@@ -159,28 +160,31 @@ public class DateUtils {
 
     /**
      * date_md --> text
+     *
      * @param date
      * @return
      */
-    public static String sdfTimeFormat(Date date){
+    public static String sdfTimeFormat(Date date) {
         return SDF_MD.format(date);
     }
 
     /**
      * date_md_hms --> text
+     *
      * @param date
      * @return
      */
-    public static String sdfTimeFormatMdHms(Date date){
+    public static String sdfTimeFormatMdHms(Date date) {
         return SDF_MD_HMS.format(date);
     }
 
     /**
      * text ---> sql_date
+     *
      * @param date
      * @return
      */
-    public static java.sql.Date parseSqlDateFormat(String date){
+    public static java.sql.Date parseSqlDateFormat(String date) {
         java.sql.Date sqlDate = null;
         try {
             Date parse = SDF_MD.parse(date);
@@ -198,14 +202,12 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static Date usDate2ChinaDate(Date usDate){
+    public static Date usDate2ChinaDate(Date usDate) {
         Date chinaDate = null;
         String chinaDateString = SDF_MD.format(usDate);
         chinaDate = parseSqlDateFormat(chinaDateString);
         return chinaDate;
     }
-
-
 
 
     /**
@@ -216,7 +218,7 @@ public class DateUtils {
      * @date: 2022/07/19
      */
     public static String usTime2ChinaTime(String date) throws ParseException {
-        if(StringUtils.isBlank(date) || StringUtils.isEmpty(date)){
+        if (StringUtils.isBlank(date) || StringUtils.isEmpty(date)) {
             return "";
         }
         Date date1 = SDF_MD_HMS_US.parse(date);
@@ -230,18 +232,18 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static Integer durationMonth(Date lastDate, Date nowDate){
-        DateTimeFormatter  SDF_MD_DURATION = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public static Integer durationMonth(Date lastDate, Date nowDate) {
+        DateTimeFormatter SDF_MD_DURATION = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        LocalDate lastDateLocalDate = LocalDate.of(lastDate.getYear(), lastDate.getMonth()+1, lastDate.getDate());
+        LocalDate lastDateLocalDate = LocalDate.of(lastDate.getYear(), lastDate.getMonth() + 1, lastDate.getDate());
         YearMonth lastYearMonth = YearMonth.parse(SDF_MD_DURATION.format(lastDateLocalDate), SDF_MD_DURATION);
 
-        LocalDate nowDateLocalDate = LocalDate.of(nowDate.getYear(),nowDate.getMonth()+1,nowDate.getDate());
+        LocalDate nowDateLocalDate = LocalDate.of(nowDate.getYear(), nowDate.getMonth() + 1, nowDate.getDate());
         YearMonth nowDateYearMonth = YearMonth.parse(SDF_MD_DURATION.format(nowDateLocalDate), SDF_MD_DURATION);
 
         int monDif = nowDateYearMonth.getMonthValue() - lastYearMonth.getMonthValue();
-        int month = (nowDateYearMonth.getYear() - lastYearMonth.getYear())*12;
-        return monDif+month;
+        int month = (nowDateYearMonth.getYear() - lastYearMonth.getYear()) * 12;
+        return monDif + month;
     }
 
     /**
@@ -251,11 +253,11 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static Date generateBeginDate(){
+    public static Date generateBeginDate() {
         SimpleDateFormat sdf = new SimpleDateFormat(PATTERN_EXPAND);
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        c.add(Calendar.YEAR,-1);
+        c.add(Calendar.YEAR, -1);
         return c.getTime();
     }
 
@@ -266,7 +268,7 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static String generateNumberMonthByNow(Integer monthDuration){
+    public static String generateNumberMonthByNow(Integer monthDuration) {
         SimpleDateFormat format = new SimpleDateFormat(PATTERN_EXPAND);
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
@@ -282,7 +284,7 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static String generateNumberMonthByDate(Date date, Integer monthDuration){
+    public static String generateNumberMonthByDate(Date date, Integer monthDuration) {
         SimpleDateFormat format = new SimpleDateFormat(PATTERN_EXPAND);
         Calendar c = Calendar.getInstance();
         c.setTime(date);
@@ -298,7 +300,7 @@ public class DateUtils {
      * @author: shr
      * @date: 2022/07/19
      */
-    public static String generateNumberMonthAndYearByDate(Date date, Integer monthDuration){
+    public static String generateNumberMonthAndYearByDate(Date date, Integer monthDuration) {
         SimpleDateFormat format = new SimpleDateFormat(PATTERN_MONTH);
         Calendar c = Calendar.getInstance();
         c.setTime(date);
@@ -309,13 +311,26 @@ public class DateUtils {
 
     /**
      * date 前year时间
+     *
      * @param date
      * @param year
      * @return
      */
-    public static Date getBeforeYear(Date date, int year){
+    public static Date getBeforeYear(Date date, int year) {
         date.setYear(date.getYear() - year);
         return date;
+    }
+
+    public static String getNowDate() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_EXPAND);
+        return currentTime.format(formatter);
+    }
+
+    public static String getPreviousDate() {
+        LocalDateTime currentTime = LocalDateTime.now().minusHours(1);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(PATTERN_EXPAND);
+        return currentTime.format(formatter);
     }
 }
 

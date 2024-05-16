@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.boot.dandelion.health.care.dao.mapper.MemberMapper">
+    <resultMap id="BaseResultMap" type="com.boot.dandelion.health.care.dao.entity.Member">
+        <result column="memberId" jdbcType="INTEGER" property="memberId"/>
+        <result column="tel" jdbcType="VARCHAR" property="tel"/>
+        <result column="memberName" jdbcType="VARCHAR" property="memberName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="uuid" jdbcType="VARCHAR" property="uuid"/>
+        <result column="uname" jdbcType="VARCHAR" property="uname"/>
+        <result column="sortOrder" jdbcType="VARCHAR" property="sortOrder"/>
+        <result column="state" jdbcType="VARCHAR" property="state"/>
+        <result column="createTime" jdbcType="VARCHAR" property="createTime"/>
+        <result column="createBy" jdbcType="VARCHAR" property="createBy"/>
+        <result column="updateTime" jdbcType="VARCHAR" property="updateTime"/>
+        <result column="updateBy" jdbcType="VARCHAR" property="updateBy"/>
+        <result column="userId" jdbcType="VARCHAR" property="userId"/>
+        <result column="familyId" jdbcType="VARCHAR" property="familyId"/>
+        <result column="userIden" jdbcType="VARCHAR" property="userIden"/>
+        <result column="emergencyBy" jdbcType="VARCHAR" property="emergencyBy"/>
+        <result column="emergencyNumber" jdbcType="VARCHAR" property="emergencyNumber"/>
+    </resultMap>
+
+    <sql id="BaseColumnList">
+        memberId, tel, memberName, password, uuid, uname, sortOrder, state,
+        createTime, createBy, updateTime, updateBy, userId, familyId, userIden,
+        emergencyBy, emergencyNumber
+    </sql>
+
+    <insert id="insert" parameterType="com.boot.dandelion.health.care.dao.entity.Member">
+        insert into tb_member ( tel, memberName, password, uuid, uname, sortOrder, state,
+                               createTime, createBy, updateTime, updateBy, userId, familyId, userIden,
+                               emergencyBy, emergencyNumber)
+        values ( #{tel,jdbcType=VARCHAR}, #{memberName,jdbcType=VARCHAR},
+                #{password,jdbcType=VARCHAR}, #{uuid,jdbcType=VARCHAR}, #{uname,jdbcType=VARCHAR}, #{sortOrder,jdbcType=VARCHAR},
+                #{state,jdbcType=VARCHAR}, #{createTime,jdbcType=VARCHAR}, #{createBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=VARCHAR},
+                #{updateBy,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR}, #{familyId,jdbcType=VARCHAR}, #{userIden,jdbcType=VARCHAR},
+                #{emergencyBy,jdbcType=VARCHAR}, #{emergencyNumber,jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 根据 userId 查询会员信息 -->
+    <select id="selectMemberByUserId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from tb_member
+        where userId = #{userId,jdbcType=VARCHAR}
+    </select>
+
+    <update id="updateMemberByMemberIdId" parameterType="com.boot.dandelion.health.care.dao.entity.Member">
+        update tb_member
+        set tel = #{tel,jdbcType=VARCHAR}, memberName = #{memberName,jdbcType=VARCHAR},
+            password = #{password,jdbcType=VARCHAR}, updateTime = #{updateTime,jdbcType=VARCHAR},
+            uname = #{uname,jdbcType=VARCHAR}, sortOrder = #{sortOrder,jdbcType=VARCHAR},
+            state = #{state,jdbcType=VARCHAR}, updateBy = #{updateBy,jdbcType=VARCHAR},
+            familyId = #{familyId,jdbcType=VARCHAR}, userIden = #{userIden,jdbcType=VARCHAR},
+            emergencyBy = #{emergencyBy,jdbcType=VARCHAR}, emergencyNumber = #{emergencyNumber,jdbcType=VARCHAR}
+        where memberId = #{memberId,jdbcType=VARCHAR}
+    </update>
+
+    <!-- 根据 userId 删除会员信息 -->
+    <delete id="deleteMemberByUserId" parameterType="java.lang.String">
+        delete from tb_member where userId = #{userId,jdbcType=VARCHAR}
+    </delete>
+
+    <delete id="deleteMemberByMemberId" parameterType="java.lang.Integer">
+        delete from tb_member where memberId = #{memberId,jdbcType=VARCHAR}
+    </delete>
+
+    <select id="selectMemberByTel" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from tb_member
+        where tel = #{tel,jdbcType=INTEGER}
+    </select>
+    <select id="selectMemberByMemberId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from tb_member
+        where memberId = #{memberId,jdbcType=INTEGER}
+    </select>
+
+    <select id="selectMemberByFamilyId" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select
+        <include refid="BaseColumnList"/>
+        from tb_member
+        where familyId = #{familyId,jdbcType=INTEGER}
+    </select>
+</mapper>
